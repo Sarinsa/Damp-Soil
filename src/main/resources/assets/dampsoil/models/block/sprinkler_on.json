@@ -1,0 +1,6 @@
+{
+  "parent": "dampsoil:block/sprinkler_off",
+  "textures": {
+    "top": "dampsoil:block/sprinkler_top_on"
+  }
+}

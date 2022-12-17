@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "sprinkling=false": {
+      "model": "dampsoil:block/sprinkler_off"
+    },
+    "sprinkling=true": {
+      "model": "dampsoil:block/sprinkler_on"
+    }
+  }
+}

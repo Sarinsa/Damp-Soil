@@ -10,7 +10,7 @@ logoFile="logo.png"
 credits="RandomMcSomethin (original author)"
 authors="Sarinsa"
 description='''
-TODO
+Introduces some changes to farmland and how crops grow. Also comes with sprinklers for all your sprinkly needs!
 '''
 [[dependencies.dampsoil]]
     modId="forge"
@@ -22,6 +22,6 @@ TODO
 [[dependencies.dampsoil]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5)"
+    versionRange="[1.16.5]"
     ordering="NONE"
     side="BOTH"
