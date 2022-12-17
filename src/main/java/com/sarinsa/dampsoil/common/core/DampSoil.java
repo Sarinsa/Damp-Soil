@@ -20,6 +20,7 @@ public class DampSoil {
 
         DSBlocks.BLOCKS.register(modBus);
         DSItems.ITEMS.register(modBus);
+        DSParticles.PARTICLES.register(modBus);
         DSTileEntities.TILE_ENTITIES.register(modBus);
     }
 

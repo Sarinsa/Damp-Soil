@@ -1,6 +1,7 @@
 package com.sarinsa.dampsoil.common.tile;
 
 import com.sarinsa.dampsoil.common.block.SprinklerBlock;
+import com.sarinsa.dampsoil.common.core.DSParticles;
 import com.sarinsa.dampsoil.common.core.DSTileEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -83,7 +84,7 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
             double zSpeed = (random.nextFloat() - 0.5D) * 30;
 
             world.addParticle(
-                    ParticleTypes.SPLASH,
+                    DSParticles.SPRINKLER_SPLASH.get(),
                     (double) pos.getX() + 0.5D,
                     (double) pos.getY() + 1,
                     (double) pos.getZ() + 0.5D,
