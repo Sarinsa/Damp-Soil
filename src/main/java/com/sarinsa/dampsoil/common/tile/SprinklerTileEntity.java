@@ -132,21 +132,23 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
                 }
             }
             // entity interactions
-            BlockPos pos = getBlockPos();
-            AxisAlignedBB range = new AxisAlignedBB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
 
-            if (getBlockState().getValue(SprinklerBlock.FACING) == Direction.DOWN)
-                range = range.move(0, -3, 0);
+            if (DSCommonConfig.COMMON.mobInteractions.get()) {
+                BlockPos pos = getBlockPos();
+                AxisAlignedBB range = new AxisAlignedBB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
 
-            // iterates through entities
-            for (Entity entity: level.getEntitiesOfClass(Entity.class, range, entity -> true)) {
-                // hurt water-vulnerable mobs
-                if (entity instanceof LivingEntity && (((LivingEntity) entity).isSensitiveToWater() || entity instanceof BeeEntity)) {
-                    entity.hurt(DamageSource.DROWN, 1.0F);
-                }
-                // extinguish entities
-                if (entity.getRemainingFireTicks() > 0) {
-                    entity.clearFire();
+                if (getBlockState().getValue(SprinklerBlock.FACING) == Direction.DOWN)
+                    range = range.move(0, -3, 0);
+
+                for (Entity entity : level.getEntitiesOfClass(Entity.class, range, entity -> true)) {
+                    // hurt mobs sensitive to water
+                    if (entity instanceof LivingEntity && (((LivingEntity) entity).isSensitiveToWater() || entity instanceof BeeEntity)) {
+                        entity.hurt(DamageSource.DROWN, 1.0F);
+                    }
+                    // extinguish entities
+                    if (entity.getRemainingFireTicks() > 0) {
+                        entity.clearFire();
+                    }
                 }
             }
         }

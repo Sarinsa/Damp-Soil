@@ -24,6 +24,7 @@ public class DSCommonConfig {
         public final ForgeConfigSpec.IntValue sprinklerActivationTime;
         public final ForgeConfigSpec.IntValue sprinklerRadius;
         public final ForgeConfigSpec.IntValue netheriteSprinklerRadius;
+        public final ForgeConfigSpec.BooleanValue mobInteractions;
 
         public final ForgeConfigSpec.BooleanValue requirePiping;
 
@@ -55,6 +56,9 @@ public class DSCommonConfig {
 
             netheriteSprinklerRadius = configBuilder.comment("Determines the effective radius of the netherite sprinkler for moisturizing nearby farmland.")
                     .defineInRange("sprinklerRadius", 4, 1, 7);
+
+            mobInteractions = configBuilder.comment("If enabled, the sprinklers will interact with entities in the world in various ways (e.g. hurting water sensitive mobs and extinguishing burning mobs.)")
+                            .define("mobInteractions", true);
 
             configBuilder.pop();
 
