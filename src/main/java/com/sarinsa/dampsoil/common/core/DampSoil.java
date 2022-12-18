@@ -37,6 +37,8 @@ public class DampSoil {
         DSParticles.PARTICLES.register(modBus);
         DSTileEntities.TILE_ENTITIES.register(modBus);
 
+        modBus.addListener(this::onCommonSetup);
+
         MinecraftForge.EVENT_BUS.register(new DSEventListener());
 
         ModLoadingContext context = ModLoadingContext.get();

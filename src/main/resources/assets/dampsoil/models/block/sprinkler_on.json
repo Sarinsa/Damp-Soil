@@ -1,5 +1,5 @@
 {
-  "parent": "dampsoil:block/sprinkler_off",
+  "parent": "dampsoil:block/template_sprinkler",
   "textures": {
     "top": "dampsoil:block/sprinkler_top_on"
   }

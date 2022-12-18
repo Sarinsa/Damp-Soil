@@ -1,5 +1,5 @@
 {
-  "parent": "dampsoil/sprinkler_off",
+  "parent": "dampsoil:block/template_sprinkler",
   "textures": {
     "bottom": "dampsoil:block/netherite_sprinkler_bottom",
     "top": "dampsoil:block/netherite_sprinkler_top_off",
