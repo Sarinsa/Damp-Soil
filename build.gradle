@@ -85,10 +85,9 @@ repositories {
         url "https://dvs1.progwml6.com/files/maven"
     }
     maven {
-        name 'CurseMaven'
-        url 'https://www.cursemaven.com'
+        url "https://cursemaven.com"
         content {
-            includeGroup 'curse.maven'
+            includeGroup "curse.maven"
         }
     }
 }
@@ -97,6 +96,11 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+    runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_version}")
+    compileOnly fg.deobf("curse.maven:mekanism_api-268560:${mekanism_api_ver}-api")
+
+    runtimeOnly fg.deobf("curse.maven:cofh_core-69162:${cofhc_version}")
+    runtimeOnly fg.deobf("curse.maven:thermal_foundation-222880:${thermalf_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

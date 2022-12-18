@@ -25,6 +25,8 @@ public class DSCommonConfig {
         public final ForgeConfigSpec.IntValue sprinklerRadius;
         public final ForgeConfigSpec.IntValue netheriteSprinklerRadius;
 
+        public final ForgeConfigSpec.BooleanValue requirePiping;
+
 
 
         private Common(ForgeConfigSpec.Builder configBuilder) {
@@ -53,6 +55,13 @@ public class DSCommonConfig {
 
             netheriteSprinklerRadius = configBuilder.comment("Determines the effective radius of the netherite sprinkler for moisturizing nearby farmland.")
                     .defineInRange("sprinklerRadius", 4, 1, 7);
+
+            configBuilder.pop();
+
+            configBuilder.push("compat");
+
+            requirePiping = configBuilder.comment("Whether sprinklers need to be hooked up with fluid pipes to function.")
+                            .define("requirePiping", false);
 
             configBuilder.pop();
         }
