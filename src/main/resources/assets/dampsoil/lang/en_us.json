@@ -1,5 +1,6 @@
 {
   "block.dampsoil.sprinkler": "Sprinkler",
+  "block.dampsoil.netherite_sprinkler": "Netherite Sprinkler",
 
   "text.autoconfig.moisturization.title": "Moisturization Options",
   "text.autoconfig.moisturization.option.cropsDie": "Crops Die Without Water",

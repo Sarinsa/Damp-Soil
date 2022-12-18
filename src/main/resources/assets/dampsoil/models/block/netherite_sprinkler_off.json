@@ -1,0 +1,9 @@
+{
+  "parent": "dampsoil/sprinkler_off",
+  "textures": {
+    "bottom": "dampsoil:block/netherite_sprinkler_bottom",
+    "top": "dampsoil:block/netherite_sprinkler_top_off",
+    "side": "dampsoil:block/netherite_sprinkler_side",
+    "particle": "dampsoil:block/netherite_sprinkler_side"
+  }
+}

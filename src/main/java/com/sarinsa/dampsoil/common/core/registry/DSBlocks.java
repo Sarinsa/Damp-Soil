@@ -1,6 +1,7 @@
-package com.sarinsa.dampsoil.common.core;
+package com.sarinsa.dampsoil.common.core.registry;
 
 import com.sarinsa.dampsoil.common.block.SprinklerBlock;
+import com.sarinsa.dampsoil.common.core.DampSoil;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -11,12 +12,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
 
+import static com.sarinsa.dampsoil.common.core.config.DSCommonConfig.COMMON;
+
 public class DSBlocks {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, DampSoil.MODID);
 
 
-    public static final RegistryObject<Block> SPRINKLER = register("sprinkler", SprinklerBlock::new, ItemGroup.TAB_REDSTONE);
+    public static final RegistryObject<Block> SPRINKLER = register("sprinkler", () -> new SprinklerBlock(COMMON.sprinklerRadius::get), ItemGroup.TAB_REDSTONE);
+    public static final RegistryObject<Block> NETHERITE_SPRINKLER = register("netherite_sprinkler", () -> new SprinklerBlock(COMMON.netheriteSprinklerRadius::get), ItemGroup.TAB_REDSTONE);
 
 
     private static <T extends Block> RegistryObject<T> registerNoBlockItem(String name, Supplier<T> supplier) {

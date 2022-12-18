@@ -6,11 +6,9 @@ import net.minecraft.particles.BasicParticleType;
 
 public class SprinklerSplashParticle extends SpriteTexturedParticle {
 
-    private final IAnimatedSprite sprites;
 
     public SprinklerSplashParticle(ClientWorld clientWorld, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, IAnimatedSprite sprites) {
         super(clientWorld, x, y, z, xSpeed, ySpeed, zSpeed);
-        this.sprites = sprites;
         hasPhysics = true;
         gravity = 0.7F;
 

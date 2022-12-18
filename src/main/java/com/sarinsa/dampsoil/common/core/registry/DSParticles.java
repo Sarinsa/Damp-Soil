@@ -1,5 +1,6 @@
-package com.sarinsa.dampsoil.common.core;
+package com.sarinsa.dampsoil.common.core.registry;
 
+import com.sarinsa.dampsoil.common.core.DampSoil;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleType;
 import net.minecraftforge.fml.RegistryObject;

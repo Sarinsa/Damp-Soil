@@ -1,5 +1,6 @@
-package com.sarinsa.dampsoil.common.core;
+package com.sarinsa.dampsoil.common.core.registry;
 
+import com.sarinsa.dampsoil.common.core.DampSoil;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;

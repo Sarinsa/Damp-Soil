@@ -1,5 +1,6 @@
-package com.sarinsa.dampsoil.common.core;
+package com.sarinsa.dampsoil.common.core.registry;
 
+import com.sarinsa.dampsoil.common.core.DampSoil;
 import com.sarinsa.dampsoil.common.tile.SprinklerTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -17,7 +18,7 @@ public class DSTileEntities {
 
 
     public static final RegistryObject<TileEntityType<SprinklerTileEntity>> SPRINKLER = register("sprinkler", () ->
-            TileEntityType.Builder.of(SprinklerTileEntity::new, new Block[] {DSBlocks.SPRINKLER.get()}).build(null));
+            TileEntityType.Builder.of(SprinklerTileEntity::new, new Block[] {DSBlocks.SPRINKLER.get(), DSBlocks.NETHERITE_SPRINKLER.get()}).build(null));
 
 
     private static <T extends TileEntity> RegistryObject<TileEntityType<T>> register(String name, Supplier<TileEntityType<T>> supplier) {

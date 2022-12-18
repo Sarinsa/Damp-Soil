@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.sarinsa.dampsoil.common.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.8",
+  "refmap": "dampsoil.mixins.refmap.json",
+  "mixins": [
+    "CropsBlockMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
