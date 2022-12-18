@@ -97,10 +97,6 @@ dependencies {
 
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
     runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_version}")
-    compileOnly fg.deobf("curse.maven:mekanism_api-268560:${mekanism_api_ver}-api")
-
-    runtimeOnly fg.deobf("curse.maven:cofh_core-69162:${cofhc_version}")
-    runtimeOnly fg.deobf("curse.maven:thermal_foundation-222880:${thermalf_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
@@ -114,7 +110,8 @@ jar {
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"Sarinsa",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            "MixinConfigs": "dampsoil.mixins.json"
         ])
     }
 }

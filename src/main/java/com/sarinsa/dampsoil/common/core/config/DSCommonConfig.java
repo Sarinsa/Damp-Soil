@@ -55,7 +55,7 @@ public class DSCommonConfig {
                             .defineInRange("sprinklerRadius", 2, 1, 7);
 
             netheriteSprinklerRadius = configBuilder.comment("Determines the effective radius of the netherite sprinkler for moisturizing nearby farmland.")
-                    .defineInRange("sprinklerRadius", 4, 1, 7);
+                    .defineInRange("netheriteSprinklerRadius", 4, 1, 7);
 
             mobInteractions = configBuilder.comment("If enabled, the sprinklers will interact with entities in the world in various ways (e.g. hurting water sensitive mobs and extinguishing burning mobs.)")
                             .define("mobInteractions", true);

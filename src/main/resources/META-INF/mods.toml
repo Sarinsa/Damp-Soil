@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[36,)"
 license="MIT license"
+issueTrackerURL="https://github.com/Sarinsa/Damp-Soil/issues"
 
 [[mods]]
 modId="dampsoil"
@@ -10,7 +11,7 @@ logoFile="logo.png"
 credits="RandomMcSomethin (original author)"
 authors="Sarinsa"
 description='''
-Introduces some changes to farmland works and how crops grow. Also comes with sprinklers for all your sprinkly needs!
+Introduces some changes to how farmland works, how crops grow and a couple other things. Also comes with sprinklers for all your sprinkly needs!
 '''
 [[dependencies.dampsoil]]
     modId="forge"

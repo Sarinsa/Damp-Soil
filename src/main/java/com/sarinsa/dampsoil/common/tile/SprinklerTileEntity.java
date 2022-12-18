@@ -80,8 +80,8 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
 
             // Are we configured to need water pipes? If so, check for that and do what needs to be done
             if (requirePiping) {
-                if (waterTank.getFluid().getFluid().is(FluidTags.WATER) && waterTank.getFluid().getAmount() > 0) {
-                    waterTank.getFluid().setAmount(waterTank.getFluid().getAmount() - 1);
+                if (waterTank.getFluid().getFluid().is(FluidTags.WATER) && waterTank.getFluid().getAmount() >= radius) {
+                    waterTank.getFluid().setAmount(waterTank.getFluid().getAmount() - radius);
 
                     if (--timeNextSync <= 0) {
                         if (needSync) {
