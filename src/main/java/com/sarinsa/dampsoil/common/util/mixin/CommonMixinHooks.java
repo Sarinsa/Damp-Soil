@@ -18,7 +18,9 @@ public class CommonMixinHooks {
     /**
      * Called from {@link com.sarinsa.dampsoil.common.mixin.CropsBlockMixin#onRandomTick(BlockState, ServerWorld, BlockPos, Random, CallbackInfo)}<br>
      * <br>
-     * Checks if the crop block should die if it is on dry farmland.
+     * Checks if the crop block should die if it is on dry farmland,
+     * and checks if this random tick should be canceled altogether to
+     * slow down crop growth.
      */
     public static void onCropRandomTick(World world, BlockPos pos, CallbackInfo ci) {
         // Kill off crops on dry soil
@@ -29,20 +31,10 @@ public class CommonMixinHooks {
                 world.setBlock(pos, Blocks.DEAD_BUSH.defaultBlockState(), 2);
         }
         // Maybe cancel crop growth
-        if (world.getRandom().nextDouble() > 1.0 / (float) DSCommonConfig.COMMON.growthReductor.get()) {
+        if (world.getRandom().nextDouble() > 1.0 / (float) DSCommonConfig.COMMON.growthRate.get()) {
             ci.cancel();
         }
     }
-
-    /*
-    public static void onCheckForWater(IWorldReader world, BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
-        if (DSCommonConfig.COMMON.waterRange.get() != 4) {
-            if (FarmlandUtil.checkForWater(world, pos)) {
-                ci.setReturnValue(true);
-            }
-        }
-    }
-     */
 
     /**
      * Called from {@link com.sarinsa.dampsoil.common.mixin.FarmlandBlockMixin#redirectIsWaterNearby(BlockPos, BlockPos, IWorldReader, BlockPos)}<br>
@@ -63,7 +55,7 @@ public class CommonMixinHooks {
     public static void onFarmlandTick(BlockState state, Random random, CallbackInfo ci) {
         int moisture = state.getValue(FarmlandBlock.MOISTURE);
 
-        if (moisture > 0 && random.nextDouble() > ((double)(DSCommonConfig.COMMON.farmlandDryingRate.get())) / 100)
+        if (moisture > 0 && random.nextDouble() > DSCommonConfig.COMMON.farmlandDryingRate.get())
             ci.cancel();
     }
 }

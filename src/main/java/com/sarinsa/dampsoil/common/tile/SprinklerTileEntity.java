@@ -7,6 +7,10 @@ import com.sarinsa.dampsoil.common.core.registry.DSTileEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FarmlandBlock;
+import net.minecraft.block.TorchBlock;
+import net.minecraft.client.GameSettings;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.settings.ParticleStatus;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
@@ -25,7 +29,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -37,11 +40,12 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public class SprinklerTileEntity extends TileEntity implements ITickableTileEntity {
 
     private boolean sprinkling = false;
-    private int radius;
+    private Supplier<Integer> radiusSupplier;
 
     private int timeNextSync = 10;
     protected boolean needSync = false;
@@ -63,7 +67,7 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
     @Override
     public void onLoad() {
         if (level != null && getBlockState().getBlock() instanceof SprinklerBlock) {
-            radius = ((SprinklerBlock) getBlockState().getBlock()).getRadius();
+            radiusSupplier = ((SprinklerBlock) getBlockState().getBlock()).getRadius();
         }
     }
 
@@ -75,7 +79,7 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
 
         // Are we sprinklin'? :^)
         if (getBlockState().getValue(SprinklerBlock.SPRINKLING)) {
-
+            final int radius = radiusSupplier.get();
             boolean requirePiping = DSCommonConfig.COMMON.requirePiping.get();
 
             // Are we configured to need water pipes? If so, check for that and do what needs to be done
@@ -115,7 +119,7 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
                 // Funnie splash particles
                 splashParticles(level, getBlockPos());
             }
-            final int loopCount = (radius + 1) / 2;
+            final int loopCount = (int) ((radius + 1) / 1.5D);
 
             for (int i = 0; i < loopCount; ++i) {
                 int yOffset = 1;
@@ -132,7 +136,6 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
                 }
             }
             // entity interactions
-
             if (DSCommonConfig.COMMON.mobInteractions.get()) {
                 BlockPos pos = getBlockPos();
                 AxisAlignedBB range = new AxisAlignedBB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
@@ -222,10 +225,11 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
     }
 
     protected void splashParticles(World world, BlockPos pos) {
-        double speedMul = 30.0D * radius / 2.0D;
+        double speedMul = 30.0D * radiusSupplier.get() / 2.0D;
         Random random = world.random;
+        int count = 6 * (radiusSupplier.get() / 2);
 
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < count; ++i) {
             double xSpeed = (double)random.nextFloat() - 0.5D;
             double zSpeed = (double)random.nextFloat() - 0.5D;
             double ySpeed = -1.0D;

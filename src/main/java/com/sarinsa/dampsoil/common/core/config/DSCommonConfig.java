@@ -18,13 +18,14 @@ public class DSCommonConfig {
 
         public final ForgeConfigSpec.BooleanValue cropsDie;
         public final ForgeConfigSpec.IntValue waterRange;
-        public final ForgeConfigSpec.IntValue growthReductor;
-        public final ForgeConfigSpec.IntValue boneMealReductor;
-        public final ForgeConfigSpec.IntValue farmlandDryingRate;
+        public final ForgeConfigSpec.IntValue growthRate;
+        public final ForgeConfigSpec.IntValue boneMealEfficiency;
+        public final ForgeConfigSpec.DoubleValue farmlandDryingRate;
         public final ForgeConfigSpec.IntValue sprinklerActivationTime;
         public final ForgeConfigSpec.IntValue sprinklerRadius;
         public final ForgeConfigSpec.IntValue netheriteSprinklerRadius;
         public final ForgeConfigSpec.BooleanValue mobInteractions;
+        public final ForgeConfigSpec.BooleanValue disableTrampling;
 
         public final ForgeConfigSpec.BooleanValue requirePiping;
 
@@ -39,14 +40,14 @@ public class DSCommonConfig {
             waterRange = configBuilder.comment("Determines the effective radius of a water block to moisturize nearby farmland.")
                             .defineInRange("waterRange", 1, 1, 7);
 
-            growthReductor = configBuilder.comment("Determines the chance for a crop to grow. A value of 4 would equal a 1/4 chance for the crop to grow when it is ticked.")
+            growthRate = configBuilder.comment("Determines the chance for a crop to grow. A value of 4 would equal a 1/4 chance for the crop to grow when it is ticked.")
                             .defineInRange("growthReductor", 7, 1, 10);
 
-            boneMealReductor = configBuilder.comment("Determines the chance for bone meal to further grow a crop. A value of 4 would equal a 1/4 chance for using bone meal to work.")
+            boneMealEfficiency = configBuilder.comment("Determines the chance for bone meal to further grow a crop. A value of 4 would equal a 1/4 chance for using bone meal to work.")
                             .defineInRange("boneMealReductor", 3, 1, 10);
 
-            farmlandDryingRate = configBuilder.comment("Determines how fast farmland dries up with no water source/sprinkler nearby.")
-                            .defineInRange("farmlandDryingRate", 5, 1, 100);
+            farmlandDryingRate = configBuilder.comment("Determines how fast farmland dries up with no water source/sprinkler nearby. A value of 0.05 equals a 5% for farmland to lose a bit of moisture when it is randomly ticked.")
+                            .defineInRange("farmlandDryingRate", 0.05, 0.01, 1.0);
 
             sprinklerActivationTime = configBuilder.comment("Determines how long the sprinkler is active after having been activated (in seconds).")
                             .defineInRange("sprinklerActivationTime", 15, 0, 30);
@@ -59,6 +60,9 @@ public class DSCommonConfig {
 
             mobInteractions = configBuilder.comment("If enabled, the sprinklers will interact with entities in the world in various ways (e.g. hurting water sensitive mobs and extinguishing burning mobs.)")
                             .define("mobInteractions", true);
+
+            disableTrampling = configBuilder.comment("If enabled, wet farmland can not be trampled into dirt by mobs or players.")
+                            .define("disableTrampling", true);
 
             configBuilder.pop();
 

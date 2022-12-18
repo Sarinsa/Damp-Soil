@@ -107,8 +107,8 @@ public class SprinklerBlock extends Block {
         }
     }
 
-    public final int getRadius() {
-        return radius.get();
+    public final Supplier<Integer> getRadius() {
+        return radius;
     }
 
     @SuppressWarnings("deprecation")
