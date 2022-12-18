@@ -5,7 +5,8 @@
   "minVersion": "0.8",
   "refmap": "dampsoil.mixins.refmap.json",
   "mixins": [
-    "CropsBlockMixin"
+    "CropsBlockMixin",
+    "FarmlandBlockMixin"
   ],
   "server": [],
   "injectors": {
