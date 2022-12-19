@@ -1,6 +1,7 @@
 package com.sarinsa.dampsoil.common.util.mixin;
 
 import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
+import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FarmlandBlock;
@@ -30,7 +31,7 @@ public class CommonMixinHooks {
             BlockState state = world.getBlockState(pos.below());
 
             if (state.getBlock() instanceof FarmlandBlock && state.getValue(FarmlandBlock.MOISTURE) < 1) {
-                world.setBlock(pos, Blocks.DEAD_BUSH.defaultBlockState(), 2);
+                world.setBlock(pos, DSBlocks.DEAD_CROP.get().defaultBlockState(), 2);
                 world.playSound(null, pos, SoundEvents.COMPOSTER_READY, SoundCategory.BLOCKS, 0.65F, 0.5F);
             }
         }

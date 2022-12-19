@@ -41,10 +41,10 @@ public class DSCommonConfig {
                             .defineInRange("waterRange", 1, 1, 7);
 
             growthRate = configBuilder.comment("Determines the chance for a crop to grow. A value of 4 would equal a 1/4 chance for the crop to grow when it is ticked.")
-                            .defineInRange("growthReductor", 7, 1, 10);
+                            .defineInRange("growthRate", 7, 1, 10);
 
             boneMealEfficiency = configBuilder.comment("Determines the chance for bone meal to further grow a crop. A value of 4 would equal a 1/4 chance for using bone meal to work.")
-                            .defineInRange("boneMealReductor", 3, 1, 10);
+                            .defineInRange("boneMealEfficiency", 3, 1, 10);
 
             farmlandDryingRate = configBuilder.comment("Determines how fast farmland dries up with no water source/sprinkler nearby. A value of 0.05 equals a 5% for farmland to lose a bit of moisture when it is randomly ticked.")
                             .defineInRange("farmlandDryingRate", 0.05, 0.01, 1.0);
