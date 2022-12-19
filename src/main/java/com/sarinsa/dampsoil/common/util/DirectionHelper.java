@@ -11,8 +11,7 @@ public class DirectionHelper {
      * vertical looking direction.
      */
     public static Direction getVerticalLookingDir(Entity entity) {
-        float f = entity.getViewXRot(1.0F) * ((float)Math.PI / 180F);
-        float f2 = MathHelper.sin(f);
-        return f2 < 0.0F ? Direction.UP : Direction.DOWN;
+        float xRot = entity.getViewXRot(1.0F) * ((float) Math.PI / 180F);
+        return MathHelper.sin(xRot) < 0.0F ? Direction.UP : Direction.DOWN;
     }
 }
