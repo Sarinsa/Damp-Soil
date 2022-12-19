@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Random;
 
@@ -24,5 +25,14 @@ public abstract class CropsBlockMixin extends BushBlock implements IGrowable {
     @Inject(at = @At("HEAD"), method = "randomTick", cancellable = true)
     public void onRandomTick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
         CommonMixinHooks.onCropRandomTick(world, pos, ci);
+    }
+
+    /**
+     * Force crops to tick regardless of age so
+     * that crops on dry soil die even if mature.
+     */
+    @Inject(at = @At("HEAD"), method = "isRandomlyTicking", cancellable = true)
+    public void onIsRandomlyTicking(BlockState state, CallbackInfoReturnable<Boolean> ci) {
+        ci.setReturnValue(true);
     }
 }

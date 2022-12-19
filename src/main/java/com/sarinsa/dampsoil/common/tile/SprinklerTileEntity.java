@@ -110,8 +110,8 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
                             getBlockPos(),
                             SoundEvents.WEATHER_RAIN,
                             SoundCategory.BLOCKS,
-                            0.5f,
-                            1.5f
+                            0.5F,
+                            1.5F
                     );
                 }
             }
