@@ -1,10 +1,12 @@
 package com.sarinsa.dampsoil.common.event;
 
-import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.block.FarmlandBlock;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -24,7 +26,7 @@ public class DSEventListener {
         Block block = event.getBlock().getBlock();
         Random random = event.getWorld().random;
 
-        if (block instanceof CropsBlock) {
+        if (block instanceof CropBlock) {
             final int chance = COMMON.boneMealEfficiency.get();
 
             if (chance <= 0 || random.nextDouble() > 1.0 / ((float) chance)) {
@@ -44,9 +46,25 @@ public class DSEventListener {
 
             // Ensure we are not encountering some modded farmland with
             // different block state properties.
-            if (state.getBlock() instanceof FarmlandBlock && state.hasProperty(FarmlandBlock.MOISTURE)) {
-                if (state.getValue(FarmlandBlock.MOISTURE) > 0)
+            if (state.getBlock() instanceof FarmBlock && state.hasProperty(FarmBlock.MOISTURE)) {
+                if (state.getValue(FarmBlock.MOISTURE) > 0)
                     event.setCanceled(true);
+            }
+        }
+    }
+
+    /**
+     * Make tilled farmland start out at max moisture level.
+     */
+    @SubscribeEvent
+    public void onBlockToolModification(BlockEvent.BlockToolModificationEvent event) {
+        if (!event.isSimulated()) {
+            if (event.getToolAction() == ToolActions.HOE_TILL) {
+                BlockState finalState = event.getFinalState();
+
+                if (finalState.is(Blocks.DIRT) || finalState.is(Blocks.GRASS_BLOCK)) {
+                    event.setFinalState(Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE));
+                }
             }
         }
     }

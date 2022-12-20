@@ -1,14 +1,13 @@
 package com.sarinsa.dampsoil.client.particle;
 
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particles.BasicParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 
-public class SprinklerSplashParticle extends SpriteTexturedParticle {
+public class SprinklerSplashParticle extends TextureSheetParticle {
 
-
-    public SprinklerSplashParticle(ClientWorld clientWorld, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, IAnimatedSprite sprites) {
-        super(clientWorld, x, y, z, xSpeed, ySpeed, zSpeed);
+    public SprinklerSplashParticle(ClientLevel clientLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, SpriteSet sprites) {
+        super(clientLevel, x, y, z, xSpeed, ySpeed, zSpeed);
         hasPhysics = true;
         gravity = 0.7F;
 
@@ -19,20 +18,15 @@ public class SprinklerSplashParticle extends SpriteTexturedParticle {
     }
 
     @Override
-    public IParticleRenderType getRenderType() {
-        return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
-    public static class Factory implements IParticleFactory<BasicParticleType> {
+    public record Factory(
+            SpriteSet spriteSet) implements ParticleProvider<SimpleParticleType> {
 
-        private final IAnimatedSprite sprites;
-
-        public Factory(IAnimatedSprite animatedSprite) {
-            sprites = animatedSprite;
-        }
-
-        public Particle createParticle(BasicParticleType particleType, ClientWorld world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            return new SprinklerSplashParticle(world, x, y, z, xSpeed, ySpeed, zSpeed, sprites);
+        public Particle createParticle(SimpleParticleType particleType, ClientLevel world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+            return new SprinklerSplashParticle(world, x, y, z, xSpeed, ySpeed, zSpeed, spriteSet);
         }
     }
 }

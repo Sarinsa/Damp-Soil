@@ -3,35 +3,30 @@ package com.sarinsa.dampsoil.common.tile;
 import com.sarinsa.dampsoil.common.block.SprinklerBlock;
 import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
-import com.sarinsa.dampsoil.common.core.registry.DSTileEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FarmlandBlock;
-import net.minecraft.block.TorchBlock;
-import net.minecraft.client.GameSettings;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.settings.ParticleStatus;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.BeeEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -42,12 +37,12 @@ import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class SprinklerTileEntity extends TileEntity implements ITickableTileEntity {
+public class SprinklerBlockEntity extends BlockEntity {
 
-    private boolean sprinkling = false;
+    protected boolean sprinkling = false;
     private Supplier<Integer> radiusSupplier;
 
-    private int timeNextSync = 10;
+    protected int timeNextSync = 10;
     protected boolean needSync = false;
 
     private final FluidTank waterTank = new FluidTank(2000, (fluidStack) -> fluidStack.getFluid().is(FluidTags.WATER)) {
@@ -57,11 +52,19 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
             needSync = true;
         }
     };
-    private final LazyOptional<IFluidHandler> fluidHandlerCap = LazyOptional.of(() -> waterTank);
+    private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(() -> waterTank);
 
 
-    public SprinklerTileEntity() {
-        super(DSTileEntities.SPRINKLER.get());
+    public SprinklerBlockEntity(BlockPos pos, BlockState state) {
+        super(DSBlockEntities.SPRINKLER.get(), pos, state);
+    }
+
+    public FluidTank getWaterTank() {
+        return waterTank;
+    }
+
+    public int getRadius() {
+        return radiusSupplier.get();
     }
 
     @Override
@@ -71,35 +74,30 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
         }
     }
 
-    @Override
-    public void tick() {
-        // ABORT MISSION
-        if (level == null)
-            return;
-
+    public static void tick(Level level, BlockPos pos, BlockState state, SprinklerBlockEntity sprinkler) {
         // Are we sprinklin'? :^)
-        if (getBlockState().getValue(SprinklerBlock.SPRINKLING)) {
-            final int radius = radiusSupplier.get();
+        if (state.getValue(SprinklerBlock.SPRINKLING)) {
+            final int radius = sprinkler.getRadius();
             boolean requirePiping = DSCommonConfig.COMMON.requirePiping.get();
 
             // Are we configured to need water pipes? If so, check for that and do what needs to be done
             if (requirePiping) {
+                FluidTank waterTank = sprinkler.getWaterTank();
                 if (waterTank.getFluid().getFluid().is(FluidTags.WATER) && waterTank.getFluid().getAmount() >= radius) {
                     waterTank.getFluid().setAmount(waterTank.getFluid().getAmount() - radius);
 
-                    if (--timeNextSync <= 0) {
-                        if (needSync) {
-                            sendUpdatePacket();
-                            needSync = false;
+                    if (--sprinkler.timeNextSync <= 0) {
+                        if (sprinkler.needSync) {
+                            sprinkler.notifyChanges();
+                            sprinkler.needSync = false;
                         }
-                        timeNextSync = 10;
+                        sprinkler.timeNextSync = 10;
                     }
                 }
                 else {
                     return;
                 }
             }
-
             Random random = level.getRandom();
 
             // Play the sprinkly noise
@@ -107,9 +105,9 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
                 if (!level.isClientSide) {
                     level.playSound(
                             null,
-                            getBlockPos(),
+                            pos,
                             SoundEvents.WEATHER_RAIN,
-                            SoundCategory.BLOCKS,
+                            SoundSource.BLOCKS,
                             0.5F,
                             1.5F
                     );
@@ -117,18 +115,18 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
             }
             if (level.isClientSide) {
                 // Funnie splash particles
-                splashParticles(level, getBlockPos());
+                splashParticles(radius, level, pos);
             }
             final int loopCount = (int) ((radius + 1) / 1.5D);
 
             for (int i = 0; i < loopCount; ++i) {
                 int yOffset = 1;
-                if (getBlockState().getValue(SprinklerBlock.FACING) == Direction.DOWN) yOffset = 4;
+                if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN) yOffset = 4;
 
-                BlockPos randomOffsetPos = getBlockPos().offset(random.nextInt(1 + 2 * radius) - radius, random.nextInt(3) - yOffset, random.nextInt(1 + 2 * radius) - radius);
+                BlockPos randomOffsetPos = pos.offset(random.nextInt(1 + 2 * radius) - radius, random.nextInt(3) - yOffset, random.nextInt(1 + 2 * radius) - radius);
                 // moisten farmland
                 if (level.getBlockState(randomOffsetPos).is(Blocks.FARMLAND)) {
-                    level.setBlock(randomOffsetPos, Blocks.FARMLAND.defaultBlockState().setValue(FarmlandBlock.MOISTURE, 7), 2);
+                    level.setBlock(randomOffsetPos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE), 2);
                 }
                 // extinguish fires
                 if (level.getBlockState(randomOffsetPos).is(BlockTags.FIRE)) {
@@ -137,15 +135,14 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
             }
             // entity interactions
             if (DSCommonConfig.COMMON.mobInteractions.get()) {
-                BlockPos pos = getBlockPos();
-                AxisAlignedBB range = new AxisAlignedBB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
+                AABB range = new AABB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
 
-                if (getBlockState().getValue(SprinklerBlock.FACING) == Direction.DOWN)
+                if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN)
                     range = range.move(0, -3, 0);
 
                 for (Entity entity : level.getEntitiesOfClass(Entity.class, range, entity -> true)) {
                     // hurt mobs sensitive to water
-                    if (entity instanceof LivingEntity && (((LivingEntity) entity).isSensitiveToWater() || entity instanceof BeeEntity)) {
+                    if (entity instanceof LivingEntity && (((LivingEntity) entity).isSensitiveToWater() || entity instanceof Bee)) {
                         entity.hurt(DamageSource.DROWN, 1.0F);
                     }
                     // extinguish entities
@@ -158,58 +155,55 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compoundNBT) {
-        compoundNBT = super.save(compoundNBT);
+    public void saveAdditional(CompoundTag compoundTag) {
+        super.saveAdditional(compoundTag);
 
-        waterTank.writeToNBT(compoundNBT);
-        compoundNBT.putBoolean("Sprinkling", sprinkling);
-
-        return compoundNBT;
+        waterTank.writeToNBT(compoundTag);
+        compoundTag.putBoolean("Sprinkling", sprinkling);
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT compoundNBT) {
-        super.load(state, compoundNBT);
+    public void load(CompoundTag compoundTag) {
+        super.load(compoundTag);
+        readSyncData(compoundTag);
+    }
 
-        waterTank.readFromNBT(compoundNBT);
+    private void readSyncData(CompoundTag syncTag) {
+        waterTank.readFromNBT(syncTag);
 
-        if (compoundNBT.contains("Sprinkling", Constants.NBT.TAG_BYTE)) {
-            sprinkling = compoundNBT.getBoolean("Sprinkling");
+        if (syncTag.contains("Sprinkling", Tag.TAG_BYTE)) {
+            sprinkling = syncTag.getBoolean("Sprinkling");
         }
     }
 
     @Override
-    public CompoundNBT getUpdateTag() {
-        return save(new CompoundNBT());
+    public CompoundTag getUpdateTag() {
+        CompoundTag updateTag = new CompoundTag();
+        saveAdditional(updateTag);
+        return updateTag;
     }
 
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(getBlockPos(), 0, getUpdateTag());
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public void onDataPacket(NetworkManager networkManager, SUpdateTileEntityPacket packet) {
-        super.onDataPacket(networkManager, packet);
-        load(getBlockState(), packet.getTag());
+    public void handleUpdateTag(CompoundTag tag) {
+        readSyncData(tag);
     }
 
     /**
      * Sends the sprinkler update packet to clients
      */
-    private void sendUpdatePacket() {
-        SUpdateTileEntityPacket updatePacket = getUpdatePacket();
-
-        if (updatePacket != null && level != null && !level.isClientSide) {
-            ServerWorld serverWorld = (ServerWorld) level;
-            serverWorld.getChunkSource().chunkMap.getPlayers(new ChunkPos(getBlockPos()), false).forEach(player -> player.connection.send(updatePacket));
-        }
+    protected void notifyChanges() {
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 2);
     }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
-        LazyOptional<T> result = CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(capability, fluidHandlerCap);
+        LazyOptional<T> result = CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(capability, fluidHandler);
 
         if (result.isPresent()) {
             Direction sprinklerDir = getBlockState().getValue(SprinklerBlock.FACING);
@@ -224,22 +218,22 @@ public class SprinklerTileEntity extends TileEntity implements ITickableTileEnti
         }
     }
 
-    protected void splashParticles(World world, BlockPos pos) {
-        double speedMul = 30.0D * radiusSupplier.get() / 2.0D;
-        Random random = world.random;
-        int count = 6 * (radiusSupplier.get() / 2);
+    protected static void splashParticles(int radius, Level level, BlockPos pos) {
+        double speedMul = 30.0D * radius / 2.0D;
+        Random random = level.random;
+        int count = 6 * (radius / 2);
 
         for (int i = 0; i < count; ++i) {
             double xSpeed = (double)random.nextFloat() - 0.5D;
             double zSpeed = (double)random.nextFloat() - 0.5D;
             double ySpeed = -1.0D;
 
-            if (world.getBlockState(pos).getValue(SprinklerBlock.FACING) == Direction.UP)
+            if (level.getBlockState(pos).getValue(SprinklerBlock.FACING) == Direction.UP)
                 ySpeed = 1.0D;
 
             double yOffset = ySpeed < 0.0D ? -0.001D : 1.0D;
 
-            world.addParticle(DSParticles.SPRINKLER_SPLASH.get(),
+            level.addParticle(DSParticles.SPRINKLER_SPLASH.get(),
                     (double) pos.getX() + 0.5D,
                     (double) pos.getY() + yOffset,
                     (double)pos.getZ() + 0.5D,

@@ -1,29 +1,29 @@
 package com.sarinsa.dampsoil.common.block;
 
 import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
-import com.sarinsa.dampsoil.common.tile.SprinklerTileEntity;
-import com.sarinsa.dampsoil.common.util.DirectionHelper;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.ToolType;
+import com.sarinsa.dampsoil.common.tile.SprinklerBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Material;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class SprinklerBlock extends Block {
+public class SprinklerBlock extends Block implements EntityBlock {
 
     public static final BooleanProperty SPRINKLING = BooleanProperty.create("sprinkling");
     public static final BooleanProperty ACTIVATED = BooleanProperty.create("activated");
@@ -32,10 +32,9 @@ public class SprinklerBlock extends Block {
     private final Supplier<Integer> radius;
 
     public SprinklerBlock(Supplier<Integer> radiusSupplier) {
-        super(AbstractBlock.Properties.of(Material.METAL)
+        super(BlockBehaviour.Properties.of(Material.METAL)
                 .strength(2.0f)
-                .requiresCorrectToolForDrops()
-                .harvestTool(ToolType.PICKAXE));
+                .requiresCorrectToolForDrops());
 
         registerDefaultState(stateDefinition.any()
                 .setValue(SPRINKLING, false)
@@ -44,65 +43,65 @@ public class SprinklerBlock extends Block {
         this.radius = radiusSupplier;
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-    @Override
     @Nullable
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new SprinklerTileEntity();
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new SprinklerBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        Direction dir = context.getPlayer() == null ? Direction.UP : DirectionHelper.getVerticalLookingDir(context.getPlayer());
-        return defaultBlockState().setValue(FACING, dir.getOpposite());
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return (lvl, blockState, pos, blockEntity) -> SprinklerBlockEntity.tick(lvl, blockState, pos, (SprinklerBlockEntity) blockEntity);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return defaultBlockState().setValue(FACING, context.getNearestLookingVerticalDirection().getOpposite());
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        if (!world.isClientSide) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+        if (!level.isClientSide) {
             // obstruction check
             boolean obstructed = false;
 
             if (state.getValue(FACING) == Direction.UP) {
-                if (!world.getBlockState(pos.above()).isAir())
+                if (!level.getBlockState(pos.above()).isAir())
                     obstructed = true;
             }
             else {
-                if (!world.getBlockState(pos.below()).isAir())
+                if (!level.getBlockState(pos.below()).isAir())
                     obstructed = true;
             }
             int activationTime = DSCommonConfig.COMMON.sprinklerActivationTime.get();
 
             // activation
-            if (world.hasNeighborSignal(pos) && !obstructed) {
+            if (level.hasNeighborSignal(pos) && !obstructed) {
                 if (!state.getValue(ACTIVATED)) {
-                    world.setBlock(pos, state.setValue(SPRINKLING, true).setValue(ACTIVATED, true), 2);
+                    level.setBlock(pos, state.setValue(SPRINKLING, true).setValue(ACTIVATED, true), 2);
 
                     if (activationTime > 0) {
-                        world.getBlockTicks().scheduleTick(pos, this, activationTime * 20);
+                        level.scheduleTick(pos, this, activationTime * 20);
                     }
                     else {
-                        world.setBlock(pos, state.setValue(SPRINKLING, true).setValue(ACTIVATED, true), 2);
+                        level.setBlock(pos, state.setValue(SPRINKLING, true).setValue(ACTIVATED, true), 2);
                     }
                 }
             }
             else {
                 if (activationTime > 0) {
-                    world.setBlock(pos, state.setValue(SPRINKLING, state.getValue(SPRINKLING)).setValue(ACTIVATED, false), 2);
+                    level.setBlock(pos, state.setValue(SPRINKLING, state.getValue(SPRINKLING)).setValue(ACTIVATED, false), 2);
                 }
                 else {
-                    world.setBlock(pos, state.setValue(SPRINKLING, false).setValue(ACTIVATED, false), 2);
+                    level.setBlock(pos, state.setValue(SPRINKLING, false).setValue(ACTIVATED, false), 2);
                 }
             }
             // but not when obstructed
             if (obstructed) {
-                world.setBlock(pos, state.setValue(SPRINKLING, false).setValue(ACTIVATED, false), 2);
+                level.setBlock(pos, state.setValue(SPRINKLING, false).setValue(ACTIVATED, false), 2);
             }
         }
     }
@@ -113,12 +112,12 @@ public class SprinklerBlock extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
         world.setBlock(pos, state.setValue(SPRINKLING, false), 2);
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> stateBuilder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {
         stateBuilder.add(SPRINKLING, ACTIVATED, FACING);
     }
 }
