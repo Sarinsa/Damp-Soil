@@ -1,6 +1,7 @@
 package com.sarinsa.dampsoil.common.event;
 
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
@@ -8,7 +9,7 @@ import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.entity.player.BonemealEvent;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -24,7 +25,7 @@ public class DSEventListener {
     @SubscribeEvent
     public void onCropGrow(BonemealEvent event) {
         Block block = event.getBlock().getBlock();
-        Random random = event.getWorld().random;
+        RandomSource random = event.getLevel().random;
 
         if (block instanceof CropBlock) {
             final int chance = COMMON.boneMealEfficiency.get();
@@ -42,7 +43,7 @@ public class DSEventListener {
     @SubscribeEvent
     public void onFarmlandTrample(BlockEvent.FarmlandTrampleEvent event) {
         if (COMMON.disableTrampling.get()) {
-            BlockState state = event.getWorld().getBlockState(event.getPos());
+            BlockState state = event.getLevel().getBlockState(event.getPos());
 
             // Ensure we are not encountering some modded farmland with
             // different block state properties.

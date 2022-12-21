@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.FarmBlock;
@@ -56,7 +57,7 @@ public class CommonMixinHooks {
      * Checks if farmland should cancel its random tick to prevent it from losing
      * moisture. How likely this is to happen depends on the farmlandDryingRate config option.
      */
-    public static void onFarmlandTick(BlockState state, Random random, CallbackInfo ci) {
+    public static void onFarmlandTick(BlockState state, RandomSource random, CallbackInfo ci) {
         int moisture = state.getValue(FarmBlock.MOISTURE);
 
         if (moisture > 0 && random.nextDouble() > DSCommonConfig.COMMON.farmlandDryingRate.get())

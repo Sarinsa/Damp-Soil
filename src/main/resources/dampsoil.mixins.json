@@ -6,7 +6,8 @@
   "refmap": "dampsoil.mixins.refmap.json",
   "mixins": [
     "CropsBlockMixin",
-    "FarmlandBlockMixin"
+    "FarmlandBlockMixin",
+    "StemBlockMixin"
   ],
   "server": [],
   "injectors": {

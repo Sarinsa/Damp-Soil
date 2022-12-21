@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 @SuppressWarnings({"ConstantConditions", "SameParameterValue"})
 public class DSBlockEntities {
 
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, DampSoil.MODID);
+    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, DampSoil.MODID);
 
 
     public static final RegistryObject<BlockEntityType<SprinklerBlockEntity>> SPRINKLER = register("sprinkler", () ->

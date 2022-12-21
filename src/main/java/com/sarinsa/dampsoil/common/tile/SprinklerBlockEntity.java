@@ -2,9 +2,8 @@ package com.sarinsa.dampsoil.common.tile;
 
 import com.sarinsa.dampsoil.common.block.SprinklerBlock;
 import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
-import com.sarinsa.dampsoil.common.core.registry.DSParticles;
 import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
-import net.minecraft.client.multiplayer.ClientLevel;
+import com.sarinsa.dampsoil.common.core.registry.DSParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +15,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,14 +27,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class SprinklerBlockEntity extends BlockEntity {
@@ -98,7 +97,7 @@ public class SprinklerBlockEntity extends BlockEntity {
                     return;
                 }
             }
-            Random random = level.getRandom();
+            RandomSource random = level.getRandom();
 
             // Play the sprinkly noise
             if (random.nextDouble() < 0.15D) {
@@ -203,7 +202,7 @@ public class SprinklerBlockEntity extends BlockEntity {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
-        LazyOptional<T> result = CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(capability, fluidHandler);
+        LazyOptional<T> result = ForgeCapabilities.FLUID_HANDLER.orEmpty(capability, fluidHandler);
 
         if (result.isPresent()) {
             Direction sprinklerDir = getBlockState().getValue(SprinklerBlock.FACING);
@@ -220,7 +219,7 @@ public class SprinklerBlockEntity extends BlockEntity {
 
     protected static void splashParticles(int radius, Level level, BlockPos pos) {
         double speedMul = 30.0D * radius / 2.0D;
-        Random random = level.random;
+        RandomSource random = level.random;
         int count = 6 * (radius / 2);
 
         for (int i = 0; i < count; ++i) {

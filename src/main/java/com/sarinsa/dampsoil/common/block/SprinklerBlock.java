@@ -5,6 +5,7 @@ import com.sarinsa.dampsoil.common.tile.SprinklerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.Material;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class SprinklerBlock extends Block implements EntityBlock {
@@ -112,7 +112,7 @@ public class SprinklerBlock extends Block implements EntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
         world.setBlock(pos, state.setValue(SPRINKLING, false), 2);
     }
 

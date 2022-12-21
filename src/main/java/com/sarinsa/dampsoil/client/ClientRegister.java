@@ -2,14 +2,9 @@ package com.sarinsa.dampsoil.client;
 
 import com.sarinsa.dampsoil.client.particle.SprinklerSplashParticle;
 import com.sarinsa.dampsoil.common.core.DampSoil;
-import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -23,13 +18,11 @@ public class ClientRegister {
     }
 
     private static void setBlockRenderTypes() {
-        ItemBlockRenderTypes.setRenderLayer(DSBlocks.DEAD_CROP.get(), RenderType.cutout());
+        //ItemBlockRenderTypes.setRenderLayer(DSBlocks.DEAD_CROP.get(), RenderType.cutout());
     }
 
     @SubscribeEvent
-    public static void registerParticles(ParticleFactoryRegisterEvent event) {
-        ParticleEngine manager = Minecraft.getInstance().particleEngine;
-
-        manager.register(DSParticles.SPRINKLER_SPLASH.get(), SprinklerSplashParticle.Factory::new);
+    public static void registerParticles(RegisterParticleProvidersEvent event) {
+        event.register(DSParticles.SPRINKLER_SPLASH.get(), SprinklerSplashParticle.Factory::new);
     }
 }
