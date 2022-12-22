@@ -124,7 +124,7 @@ public class SprinklerBlockEntity extends BlockEntity {
 
                 BlockPos randomOffsetPos = pos.offset(random.nextInt(1 + 2 * radius) - radius, random.nextInt(3) - yOffset, random.nextInt(1 + 2 * radius) - radius);
                 // moisten farmland
-                if (level.getBlockState(randomOffsetPos).is(Blocks.FARMLAND)) {
+                if (level.getBlockState(randomOffsetPos).is(Blocks.FARMLAND) && level.getBlockState(randomOffsetPos).getValue(FarmBlock.MOISTURE) < FarmBlock.MAX_MOISTURE) {
                     level.setBlock(randomOffsetPos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE), 2);
                 }
                 // extinguish fires

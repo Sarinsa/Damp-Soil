@@ -28,7 +28,6 @@ public class DSCommonConfig {
         public final ForgeConfigSpec.BooleanValue disableTrampling;
         public final ForgeConfigSpec.BooleanValue freezeFarmland;
         public final ForgeConfigSpec.BooleanValue vaporiseMoisture;
-        public final ForgeConfigSpec.DoubleValue temperatureModifier;
 
         public final ForgeConfigSpec.BooleanValue requirePiping;
 
@@ -70,11 +69,9 @@ public class DSCommonConfig {
             freezeFarmland = configBuilder.comment("If enabled, wet farmland will freeze in cold biomes.")
                             .define("freezeFarmland", true);
 
-            vaporiseMoisture = configBuilder.comment("If enabled, wet farmland will dry out faster in warm biomes. Look for the 'temperatureModifier' config option to tweak how fast moisture should evaporate depending on temperature.")
+            vaporiseMoisture = configBuilder.comment("If enabled, wet farmland will dry out at vanilla speed if in direct sunlight and in a biome with a temperature equal or greater than 1.0. ")
                             .define("vaporiseMoisture", true);
 
-            temperatureModifier = configBuilder.comment("If 'vaporiseMoisture is enabled', this value will be used as a multiplier to determine how fast farmland should dry out in warm biomes depending on temperature.")
-                            .defineInRange("temperatureModifier", 1.1D, 1.001D, 100.0D);
 
             configBuilder.pop();
 
