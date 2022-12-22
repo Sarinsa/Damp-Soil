@@ -44,6 +44,7 @@ public class SprinklerBlockEntity extends BlockEntity {
     protected int timeNextSync = 10;
     protected boolean needSync = false;
 
+    @SuppressWarnings("deprecation")
     private final FluidTank waterTank = new FluidTank(2000, (fluidStack) -> fluidStack.getFluid().is(FluidTags.WATER)) {
         @Override
         protected void onContentsChanged() {
@@ -73,6 +74,7 @@ public class SprinklerBlockEntity extends BlockEntity {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static void tick(Level level, BlockPos pos, BlockState state, SprinklerBlockEntity sprinkler) {
         // Are we sprinklin'? :^)
         if (state.getValue(SprinklerBlock.SPRINKLING)) {
@@ -98,55 +100,61 @@ public class SprinklerBlockEntity extends BlockEntity {
                 }
             }
             RandomSource random = level.getRandom();
-
-            // Play the sprinkly noise
-            if (random.nextDouble() < 0.15D) {
-                if (!level.isClientSide) {
-                    level.playSound(
-                            null,
-                            pos,
-                            SoundEvents.WEATHER_RAIN,
-                            SoundSource.BLOCKS,
-                            0.5F,
-                            1.5F
-                    );
-                }
+            // Make some sad vapor particles if it's too
+            // hot in this dimension to sprinkle.
+            if (!DSCommonConfig.COMMON.canSprinkleInUltrawarm.get() && level.dimensionType().ultraWarm()) {
+                vaporParticles(level, pos);
             }
-            if (level.isClientSide) {
-                // Funnie splash particles
-                splashParticles(radius, level, pos);
-            }
-            final int loopCount = (int) ((radius + 1) / 1.5D);
-
-            for (int i = 0; i < loopCount; ++i) {
-                int yOffset = 1;
-                if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN) yOffset = 4;
-
-                BlockPos randomOffsetPos = pos.offset(random.nextInt(1 + 2 * radius) - radius, random.nextInt(3) - yOffset, random.nextInt(1 + 2 * radius) - radius);
-                // moisten farmland
-                if (level.getBlockState(randomOffsetPos).is(Blocks.FARMLAND) && level.getBlockState(randomOffsetPos).getValue(FarmBlock.MOISTURE) < FarmBlock.MAX_MOISTURE) {
-                    level.setBlock(randomOffsetPos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE), 2);
-                }
-                // extinguish fires
-                if (level.getBlockState(randomOffsetPos).is(BlockTags.FIRE)) {
-                    level.removeBlock(randomOffsetPos, false);
-                }
-            }
-            // entity interactions
-            if (DSCommonConfig.COMMON.mobInteractions.get()) {
-                AABB range = new AABB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
-
-                if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN)
-                    range = range.move(0, -3, 0);
-
-                for (Entity entity : level.getEntitiesOfClass(Entity.class, range, entity -> true)) {
-                    // hurt mobs sensitive to water
-                    if (entity instanceof LivingEntity && (((LivingEntity) entity).isSensitiveToWater() || entity instanceof Bee)) {
-                        entity.hurt(DamageSource.DROWN, 1.0F);
+            else {
+                // Play the sprinkly noise
+                if (random.nextDouble() < 0.15D) {
+                    if (!level.isClientSide) {
+                        level.playSound(
+                                null,
+                                pos,
+                                SoundEvents.WEATHER_RAIN,
+                                SoundSource.BLOCKS,
+                                0.5F,
+                                1.5F
+                        );
                     }
-                    // extinguish entities
-                    if (entity.getRemainingFireTicks() > 0) {
-                        entity.clearFire();
+                }
+                if (level.isClientSide) {
+                    // Funnie splash particles
+                    splashParticles(radius, level, pos);
+                }
+                final int loopCount = (int) ((radius + 1) / 1.5D);
+
+                for (int i = 0; i < loopCount; ++i) {
+                    int yOffset = 1;
+                    if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN) yOffset = 4;
+
+                    BlockPos randomOffsetPos = pos.offset(random.nextInt(1 + 2 * radius) - radius, random.nextInt(3) - yOffset, random.nextInt(1 + 2 * radius) - radius);
+                    // moisten farmland
+                    if (level.getBlockState(randomOffsetPos).is(Blocks.FARMLAND) && level.getBlockState(randomOffsetPos).getValue(FarmBlock.MOISTURE) < FarmBlock.MAX_MOISTURE) {
+                        level.setBlock(randomOffsetPos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE), 2);
+                    }
+                    // extinguish fires
+                    if (level.getBlockState(randomOffsetPos).is(BlockTags.FIRE)) {
+                        level.removeBlock(randomOffsetPos, false);
+                    }
+                }
+                // entity interactions
+                if (DSCommonConfig.COMMON.mobInteractions.get()) {
+                    AABB range = new AABB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
+
+                    if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN)
+                        range = range.move(0, -3, 0);
+
+                    for (Entity entity : level.getEntitiesOfClass(Entity.class, range, entity -> true)) {
+                        // hurt mobs sensitive to water
+                        if (entity instanceof LivingEntity && (((LivingEntity) entity).isSensitiveToWater() || entity instanceof Bee)) {
+                            entity.hurt(DamageSource.DROWN, 1.0F);
+                        }
+                        // extinguish entities
+                        if (entity.getRemainingFireTicks() > 0) {
+                            entity.clearFire();
+                        }
                     }
                 }
             }
@@ -195,6 +203,7 @@ public class SprinklerBlockEntity extends BlockEntity {
     /**
      * Sends the sprinkler update packet to clients
      */
+    @SuppressWarnings("ConstantConditions")
     protected void notifyChanges() {
         level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 2);
     }
@@ -239,6 +248,38 @@ public class SprinklerBlockEntity extends BlockEntity {
                     xSpeed * speedMul,
                     ySpeed * 60.0D,
                     zSpeed * speedMul);
+        }
+    }
+
+    protected static void vaporParticles(Level level, BlockPos pos) {
+        RandomSource random = level.random;
+        double ySpeed = -0.02D;
+
+        if (level.getBlockState(pos).getValue(SprinklerBlock.FACING) == Direction.UP)
+            ySpeed = 0.15D;
+
+        double yOffset = ySpeed < 0.0D ? -0.001D : 1.0D;
+
+        if (random.nextInt(10) == 0) {
+            double xSpeed = (double)random.nextFloat() - 0.5D;
+            double zSpeed = (double)random.nextFloat() - 0.5D;
+
+            level.addParticle(DSParticles.SPRINKLER_SPLASH.get(),
+                    (double) pos.getX() + 0.5D,
+                    (double) pos.getY() + yOffset,
+                    (double)pos.getZ() + 0.5D,
+                    xSpeed * 5.0D,
+                    ySpeed * 60.0D,
+                    zSpeed * 5.0D);
+        }
+        else {
+            level.addParticle(DSParticles.WATER_VAPOR.get(),
+                    (double) pos.getX() + 0.5D + (random.nextGaussian() / 10),
+                    (double) pos.getY() + yOffset,
+                    (double) pos.getZ() + 0.5D + (random.nextGaussian() / 10),
+                    0.0D,
+                    ySpeed,
+                    0.0D);
         }
     }
 }

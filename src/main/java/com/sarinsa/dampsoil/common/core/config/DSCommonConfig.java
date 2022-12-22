@@ -28,6 +28,7 @@ public class DSCommonConfig {
         public final ForgeConfigSpec.BooleanValue disableTrampling;
         public final ForgeConfigSpec.BooleanValue freezeFarmland;
         public final ForgeConfigSpec.BooleanValue vaporiseMoisture;
+        public final ForgeConfigSpec.BooleanValue canSprinkleInUltrawarm;
 
         public final ForgeConfigSpec.BooleanValue requirePiping;
 
@@ -71,6 +72,9 @@ public class DSCommonConfig {
 
             vaporiseMoisture = configBuilder.comment("If enabled, wet farmland will dry out at vanilla speed if in direct sunlight and in a biome with a temperature equal or greater than 1.0. ")
                             .define("vaporiseMoisture", true);
+
+            canSprinkleInUltrawarm = configBuilder.comment("If enabled, sprinklers will function normally in ultra warm dimensions (like the nether). If disabled, the sprinkler will only spew out some sad vapor instead.")
+                            .define("canSprinkleInUltrawarm", false);
 
 
             configBuilder.pop();

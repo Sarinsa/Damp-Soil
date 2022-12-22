@@ -16,7 +16,13 @@ public class BlockHelper {
     public static boolean shouldEvaporateAt(Level level, BlockPos pos) {
         if (level.getBlockState(pos).is(Blocks.FARMLAND) && !FarmBlock.isNearWater(level, pos)) {
             int moisture = level.getBlockState(pos).getValue(FarmBlock.MOISTURE);
-            return moisture > 0 && level.getBiome(pos).get().getBaseTemperature() >= 1.0F && level.isDay() && !level.isRaining() && level.canSeeSky(pos);
+
+            if (moisture > 0) {
+                if (level.dimensionType().ultraWarm())
+                    return true;
+
+                return level.getBiome(pos).get().getBaseTemperature() >= 1.0F && level.isDay() && !level.isRaining() && level.canSeeSky(pos);
+            }
         }
         return false;
     }
