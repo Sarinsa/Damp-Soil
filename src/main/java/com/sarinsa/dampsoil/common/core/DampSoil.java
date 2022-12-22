@@ -6,6 +6,7 @@ import com.sarinsa.dampsoil.common.core.registry.DSItems;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
 import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
 import com.sarinsa.dampsoil.common.event.DSEventListener;
+import com.sarinsa.dampsoil.common.network.PacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -20,12 +21,16 @@ import org.apache.logging.log4j.Logger;
 public class DampSoil {
 
     public static final String MODID = "dampsoil";
-
     public static final Logger LOGGER = LogManager.getLogger(MODID);
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private final PacketHandler packetHandler = new PacketHandler();
 
 
     public DampSoil() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        packetHandler.registerMessages();
 
         DSBlocks.BLOCKS.register(modBus);
         DSItems.ITEMS.register(modBus);

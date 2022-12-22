@@ -29,6 +29,6 @@ public abstract class FarmlandBlockMixin extends Block {
 
     @Inject(at = @At("HEAD"), method = "randomTick", cancellable = true)
     public void onRandomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
-        CommonMixinHooks.onFarmlandTick(state, random, ci);
+        CommonMixinHooks.onFarmlandTick(state, random, pos, level, ci);
     }
 }

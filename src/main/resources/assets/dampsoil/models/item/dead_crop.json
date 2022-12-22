@@ -1,3 +1,6 @@
 {
-  "parent": "dampsoil:block/dead_crop"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:block/dead_bush"
+  }
 }

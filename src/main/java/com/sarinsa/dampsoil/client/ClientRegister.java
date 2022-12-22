@@ -1,6 +1,7 @@
 package com.sarinsa.dampsoil.client;
 
 import com.sarinsa.dampsoil.client.particle.SprinklerSplashParticle;
+import com.sarinsa.dampsoil.client.particle.WaterVaporParticle;
 import com.sarinsa.dampsoil.common.core.DampSoil;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,15 +15,12 @@ public class ClientRegister {
 
     @SubscribeEvent
     public static void onClientSetup(FMLCommonSetupEvent event) {
-        setBlockRenderTypes();
-    }
 
-    private static void setBlockRenderTypes() {
-        //ItemBlockRenderTypes.setRenderLayer(DSBlocks.DEAD_CROP.get(), RenderType.cutout());
     }
 
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event) {
         event.register(DSParticles.SPRINKLER_SPLASH.get(), SprinklerSplashParticle.Factory::new);
+        event.register(DSParticles.WATER_VAPOR.get(), WaterVaporParticle.Factory::new);
     }
 }

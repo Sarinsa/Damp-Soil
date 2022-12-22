@@ -1,6 +1,7 @@
 package com.sarinsa.dampsoil.common.core.registry;
 
 import com.sarinsa.dampsoil.common.block.DeadCropBlock;
+import com.sarinsa.dampsoil.common.block.FrozenFarmBlock;
 import com.sarinsa.dampsoil.common.block.SprinklerBlock;
 import com.sarinsa.dampsoil.common.core.DampSoil;
 import net.minecraft.world.item.BlockItem;
@@ -24,6 +25,7 @@ public class DSBlocks {
     public static final RegistryObject<Block> SPRINKLER = register("sprinkler", () -> new SprinklerBlock(COMMON.sprinklerRadius), CreativeModeTab.TAB_REDSTONE);
     public static final RegistryObject<Block> NETHERITE_SPRINKLER = register("netherite_sprinkler", () -> new SprinklerBlock(COMMON.netheriteSprinklerRadius), CreativeModeTab.TAB_REDSTONE);
     public static final RegistryObject<Block> DEAD_CROP = registerNoBlockItem("dead_crop", DeadCropBlock::new);
+    public static final RegistryObject<Block> FROZEN_FARMLAND = register("frozen_farmland", FrozenFarmBlock::new, CreativeModeTab.TAB_DECORATIONS);
 
 
     private static <T extends Block> RegistryObject<T> registerNoBlockItem(String name, Supplier<T> supplier) {

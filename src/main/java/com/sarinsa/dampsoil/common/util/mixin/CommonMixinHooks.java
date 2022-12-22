@@ -1,5 +1,6 @@
 package com.sarinsa.dampsoil.common.util.mixin;
 
+import com.sarinsa.dampsoil.common.block.FrozenFarmBlock;
 import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import net.minecraft.core.BlockPos;
@@ -9,6 +10,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -55,11 +57,21 @@ public class CommonMixinHooks {
      * Called from {@link com.sarinsa.dampsoil.common.mixin.FarmlandBlockMixin#onRandomTick(BlockState, ServerLevel, BlockPos, Random, CallbackInfo)}<br>
      * <br>
      * Checks if farmland should cancel its random tick to prevent it from losing
-     * moisture. How likely this is to happen depends on the farmlandDryingRate config option.
+     * moisture. How likely this is to happen depends on the farmlandDryingRate config option.<br>
+     * <br>
+     * Also checks if we are in a cold biome and 'freezeFarmland' is enabled in the config, in which case
+     * we freeze the farmland and let it preserve the moisture it had.
      */
-    public static void onFarmlandTick(BlockState state, RandomSource random, CallbackInfo ci) {
+    public static void onFarmlandTick(BlockState state, RandomSource random, BlockPos pos, ServerLevel level, CallbackInfo ci) {
         int moisture = state.getValue(FarmBlock.MOISTURE);
 
+        if (DSCommonConfig.COMMON.freezeFarmland.get()) {
+            if (!level.getBiome(pos).get().warmEnoughToRain(pos) && level.getBrightness(LightLayer.BLOCK, pos) < 10 && pos.getY() > 30 && moisture > 0) {
+                level.setBlock(pos, DSBlocks.FROZEN_FARMLAND.get().defaultBlockState().setValue(FrozenFarmBlock.MOISTURE, moisture), 2);
+                ci.cancel();
+                return;
+            }
+        }
         if (moisture > 0 && random.nextDouble() > DSCommonConfig.COMMON.farmlandDryingRate.get())
             ci.cancel();
     }

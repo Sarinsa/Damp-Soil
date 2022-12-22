@@ -13,4 +13,5 @@ public class DSParticles {
 
 
     public static final RegistryObject<SimpleParticleType> SPRINKLER_SPLASH = PARTICLES.register("sprinkler_splash", () -> new SimpleParticleType(false));
+    public static final RegistryObject<SimpleParticleType> WATER_VAPOR = PARTICLES.register("water_vapor", () -> new SimpleParticleType(false));
 }
