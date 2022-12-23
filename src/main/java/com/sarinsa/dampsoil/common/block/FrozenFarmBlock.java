@@ -24,6 +24,7 @@ public class FrozenFarmBlock extends Block {
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
     public static final int MAX_MOISTURE = 7;
 
+
     public FrozenFarmBlock() {
         super(BlockBehaviour.Properties.copy(Blocks.FARMLAND)
                 .color(MaterialColor.TERRACOTTA_WHITE)

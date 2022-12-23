@@ -109,8 +109,9 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    runtimeOnly fg.deobf("curse.maven:jei-238222:${jei_version}")
-    runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_version}")
+    // Waiting for these mods to update to 1.19.3
+    //runtimeOnly fg.deobf("curse.maven:jei-238222:${jei_version}")
+    //runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
