@@ -76,7 +76,6 @@ public class DSCommonConfig {
             canSprinkleInUltrawarm = configBuilder.comment("If enabled, sprinklers will function normally in ultra warm dimensions (like the nether). If disabled, the sprinkler will only spew out some sad vapor instead.")
                             .define("canSprinkleInUltrawarm", false);
 
-
             configBuilder.pop();
 
             configBuilder.push("compat");

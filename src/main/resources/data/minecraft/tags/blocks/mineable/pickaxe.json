@@ -3,6 +3,6 @@
   "values": [
     "dampsoil:sprinkler",
     "dampsoil:netherite_sprinkler",
-    "dampsoil.frozen_farmland"
+    "dampsoil:frozen_farmland"
   ]
 }
