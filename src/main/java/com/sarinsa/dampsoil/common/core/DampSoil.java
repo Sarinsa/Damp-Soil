@@ -1,5 +1,7 @@
 package com.sarinsa.dampsoil.common.core;
 
+import com.sarinsa.dampsoil.common.compat.glitchfiend.TempModifiers;
+import com.sarinsa.dampsoil.common.compat.glitchfiend.ToughAsNailsHelper;
 import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import com.sarinsa.dampsoil.common.core.registry.DSItems;
@@ -10,9 +12,11 @@ import com.sarinsa.dampsoil.common.network.PacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +42,7 @@ public class DampSoil {
         DSBlockEntities.TILE_ENTITIES.register(modBus);
 
         modBus.addListener(DSItems::onCreativeTabPopulate);
+        modBus.addListener(this::onCommonSetup);
 
         MinecraftForge.EVENT_BUS.register(new DSEventListener());
 
@@ -45,6 +50,13 @@ public class DampSoil {
         context.registerConfig(ModConfig.Type.COMMON, DSCommonConfig.COMMON_SPEC);
     }
 
+    public void onCommonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            if (ModList.get().isLoaded(ToughAsNailsHelper.MODID)) {
+                TempModifiers.register();
+            }
+        });
+    }
 
     public static ResourceLocation resLoc(String path) {
         return new ResourceLocation(MODID, path);

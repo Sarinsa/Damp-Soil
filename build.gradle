@@ -110,8 +110,14 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     // Waiting for these mods to update to 1.19.3
-    //runtimeOnly fg.deobf("curse.maven:jei-238222:${jei_version}")
+    runtimeOnly fg.deobf("curse.maven:jei-238222:${jei_version}")
     //runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_version}")
+
+    runtimeOnly fg.deobf("curse.maven:sereneseasons-291874:${serene_seasons_version}")
+    compileOnly fg.deobf("curse.maven:sereneseasons_api-291874:${serene_api_version}")
+
+    runtimeOnly fg.deobf("curse.maven:toughasnails-246391:${toughasnails_version}")
+    compileOnly fg.deobf("curse.maven:toughasnails_api-246391:${toughasnails_api_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

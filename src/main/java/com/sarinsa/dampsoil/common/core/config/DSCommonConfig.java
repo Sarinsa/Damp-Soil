@@ -31,6 +31,8 @@ public class DSCommonConfig {
         public final ForgeConfigSpec.BooleanValue canSprinkleInUltrawarm;
 
         public final ForgeConfigSpec.BooleanValue requirePiping;
+        public final ForgeConfigSpec.BooleanValue sereneSeasonsCompat;
+        public final ForgeConfigSpec.BooleanValue sprinklerCoolsPlayer;
 
 
 
@@ -82,6 +84,12 @@ public class DSCommonConfig {
 
             requirePiping = configBuilder.comment("Whether sprinklers need to be hooked up with fluid pipes to function.")
                             .define("requirePiping", false);
+
+            sereneSeasonsCompat = configBuilder.comment("If Serene Seasons is installed and this option is enabled, farmland will freeze when it is winter season.")
+                            .define("sereneSeasonsCompat", true);
+
+            sprinklerCoolsPlayer = configBuilder.comment("If Tough As Nails is installed and this option is enabled, players can cool down when standing close to an active sprinkler.")
+                            .define("sprinklerCoolsPlayer", true);
 
             configBuilder.pop();
         }

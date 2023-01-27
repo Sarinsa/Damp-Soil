@@ -1,6 +1,7 @@
 package com.sarinsa.dampsoil.common.tile;
 
 import com.sarinsa.dampsoil.common.block.SprinklerBlock;
+import com.sarinsa.dampsoil.common.compat.glitchfiend.ToughAsNailsHelper;
 import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
@@ -20,6 +21,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
@@ -74,7 +76,6 @@ public class SprinklerBlockEntity extends BlockEntity {
         }
     }
 
-    @SuppressWarnings("deprecation")
     public static void tick(Level level, BlockPos pos, BlockState state, SprinklerBlockEntity sprinkler) {
         // Are we sprinklin'? :^)
         if (state.getValue(SprinklerBlock.SPRINKLING)) {
@@ -139,10 +140,17 @@ public class SprinklerBlockEntity extends BlockEntity {
                         level.removeBlock(randomOffsetPos, false);
                     }
                 }
+                AABB range = new AABB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
+
+                // Tough As Nails compat: cool down players
+                if (DSCommonConfig.COMMON.sprinklerCoolsPlayer.get()) {
+                    for (Player player : level.getEntitiesOfClass(Player.class, range, player -> !player.isCreative() && !player.isSpectator())) {
+                        ToughAsNailsHelper.coolPlayer(player);
+                    }
+                }
+
                 // entity interactions
                 if (DSCommonConfig.COMMON.mobInteractions.get()) {
-                    AABB range = new AABB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
-
                     if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN)
                         range = range.move(0, -3, 0);
 

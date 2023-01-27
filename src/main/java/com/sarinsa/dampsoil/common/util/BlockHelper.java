@@ -1,5 +1,6 @@
 package com.sarinsa.dampsoil.common.util;
 
+import com.sarinsa.dampsoil.common.compat.glitchfiend.SereneSeasonsHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -34,7 +35,8 @@ public class BlockHelper {
     public static boolean shouldFreezeFarmlandAt(Level level, BlockPos pos) {
         if (level.getBlockState(pos).is(Blocks.FARMLAND)) {
             int moisture = level.getBlockState(pos).getValue(FarmBlock.MOISTURE);
-            return !level.getBiome(pos).get().warmEnoughToRain(pos) && level.getBrightness(LightLayer.BLOCK, pos) < 10 && pos.getY() > 30 && moisture > 0;
+            return (!level.getBiome(pos).get().warmEnoughToRain(pos) || SereneSeasonsHelper.isWinterSeason(level))
+                    && level.getBrightness(LightLayer.BLOCK, pos) < 10 && pos.getY() > 30 && moisture > 0;
         }
         return false;
     }
