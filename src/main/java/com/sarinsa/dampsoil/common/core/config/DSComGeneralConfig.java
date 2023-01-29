@@ -3,18 +3,18 @@ package com.sarinsa.dampsoil.common.core.config;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class DSCommonConfig {
+public class DSComGeneralConfig {
 
-    public static final Common COMMON;
-    public static final ForgeConfigSpec COMMON_SPEC;
+    public static final Config CONFIG;
+    public static final ForgeConfigSpec CONFIG_SPEC;
 
     static {
-        Pair<Common, ForgeConfigSpec> commonPair = new ForgeConfigSpec.Builder().configure(Common::new);
-        COMMON = commonPair.getLeft();
-        COMMON_SPEC = commonPair.getRight();
+        Pair<Config, ForgeConfigSpec> commonPair = new ForgeConfigSpec.Builder().configure(Config::new);
+        CONFIG = commonPair.getLeft();
+        CONFIG_SPEC = commonPair.getRight();
     }
 
-    public static final class Common {
+    public static final class Config {
 
         public final ForgeConfigSpec.BooleanValue cropsDie;
         public final ForgeConfigSpec.IntValue waterRange;
@@ -38,7 +38,7 @@ public class DSCommonConfig {
 
 
 
-        private Common(ForgeConfigSpec.Builder configBuilder) {
+        private Config(ForgeConfigSpec.Builder configBuilder) {
             configBuilder.push("general");
 
             cropsDie = configBuilder.comment("If enabled, crops will die on dry farmland.")

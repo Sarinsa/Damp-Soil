@@ -6,24 +6,21 @@ import com.sarinsa.dampsoil.common.block.SprinklerBlock;
 import com.sarinsa.dampsoil.common.core.DampSoil;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-import static com.sarinsa.dampsoil.common.core.config.DSCommonConfig.COMMON;
+import static com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig.CONFIG;
 
 public class DSBlocks {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, DampSoil.MODID);
 
 
-    public static final RegistryObject<Block> SPRINKLER = register("sprinkler", () -> new SprinklerBlock(COMMON.sprinklerRadius), CreativeModeTabs.REDSTONE_BLOCKS, CreativeModeTabs.FUNCTIONAL_BLOCKS);
-    public static final RegistryObject<Block> NETHERITE_SPRINKLER = register("netherite_sprinkler", () -> new SprinklerBlock(COMMON.netheriteSprinklerRadius), CreativeModeTabs.REDSTONE_BLOCKS, CreativeModeTabs.FUNCTIONAL_BLOCKS);
+    public static final RegistryObject<Block> SPRINKLER = register("sprinkler", () -> new SprinklerBlock(CONFIG.sprinklerRadius), CreativeModeTabs.REDSTONE_BLOCKS, CreativeModeTabs.FUNCTIONAL_BLOCKS);
+    public static final RegistryObject<Block> NETHERITE_SPRINKLER = register("netherite_sprinkler", () -> new SprinklerBlock(CONFIG.netheriteSprinklerRadius), CreativeModeTabs.REDSTONE_BLOCKS, CreativeModeTabs.FUNCTIONAL_BLOCKS);
     public static final RegistryObject<Block> DEAD_CROP = registerNoBlockItem("dead_crop", DeadCropBlock::new);
     public static final RegistryObject<Block> FROZEN_FARMLAND = register("frozen_farmland", FrozenFarmBlock::new, CreativeModeTabs.NATURAL_BLOCKS);
 

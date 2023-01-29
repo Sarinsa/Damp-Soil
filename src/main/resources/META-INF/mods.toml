@@ -25,3 +25,10 @@ Introduces some changes to how farmland works, how crops grow and a couple other
     versionRange="[1.19.3]"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.dampsoil]]
+    modId="sereneseasons"
+    mandatory=false
+    versionRange="[8.2,)"
+    ordering="BEFORE"
+    side="BOTH"

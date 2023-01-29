@@ -1,11 +1,7 @@
 package com.sarinsa.dampsoil.common.event;
 
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.entity.player.BonemealEvent;
@@ -13,9 +9,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.Random;
-
-import static com.sarinsa.dampsoil.common.core.config.DSCommonConfig.COMMON;
+import static com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig.CONFIG;
 
 public class DSEventListener {
 
@@ -28,7 +22,7 @@ public class DSEventListener {
         RandomSource random = event.getLevel().random;
 
         if (block instanceof CropBlock) {
-            final int chance = COMMON.boneMealEfficiency.get();
+            final int chance = CONFIG.boneMealEfficiency.get();
 
             if (chance <= 0 || random.nextDouble() > 1.0 / ((float) chance)) {
                 event.setResult(Event.Result.ALLOW);
@@ -42,7 +36,7 @@ public class DSEventListener {
      */
     @SubscribeEvent
     public void onFarmlandTrample(BlockEvent.FarmlandTrampleEvent event) {
-        if (COMMON.disableTrampling.get()) {
+        if (CONFIG.disableTrampling.get()) {
             BlockState state = event.getLevel().getBlockState(event.getPos());
 
             // Ensure we are not encountering some modded farmland with

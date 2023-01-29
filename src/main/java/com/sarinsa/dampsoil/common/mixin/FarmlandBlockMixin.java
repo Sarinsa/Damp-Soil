@@ -1,6 +1,6 @@
 package com.sarinsa.dampsoil.common.mixin;
 
-import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
+import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
 import com.sarinsa.dampsoil.common.util.mixin.CommonMixinHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +35,7 @@ public abstract class FarmlandBlockMixin extends Block {
 
     @Redirect(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 1))
     public boolean redirectRandomTick(ServerLevel serverLevel, BlockPos pos, BlockState state, int flag) {
-        return serverLevel.setBlock(pos, state.setValue(MOISTURE, DSCommonConfig.COMMON.waterEffectiveness.get()), flag);
+        return serverLevel.setBlock(pos, state.setValue(MOISTURE, DSComGeneralConfig.CONFIG.waterEffectiveness.get()), flag);
     }
 
     @Inject(at = @At("HEAD"), method = "randomTick", cancellable = true)

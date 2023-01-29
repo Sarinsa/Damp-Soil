@@ -1,13 +1,11 @@
 package com.sarinsa.dampsoil.common.util.mixin;
 
 import com.sarinsa.dampsoil.common.block.FrozenFarmBlock;
-import com.sarinsa.dampsoil.common.core.DampSoil;
-import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
+import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
 import com.sarinsa.dampsoil.common.util.BlockHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -34,14 +32,14 @@ public class CommonMixinHooks {
             int moisture = level.getBlockState(pos.below()).getValue(FarmBlock.MOISTURE);
 
             // Kill off crops on dry soil
-            if (DSCommonConfig.COMMON.cropsDie.get()) {
+            if (DSComGeneralConfig.CONFIG.cropsDie.get()) {
                 if (moisture < 1) {
                     level.setBlock(pos, DSBlocks.DEAD_CROP.get().defaultBlockState(), 2);
                     level.playSound(null, pos, SoundEvents.COMPOSTER_READY, SoundSource.BLOCKS, 0.65F, 0.5F);
                 }
             }
             // Maybe cancel crop growth
-            double growthRate = 1.0D / DSCommonConfig.COMMON.growthRate.get();
+            double growthRate = 1.0D / DSComGeneralConfig.CONFIG.growthRate.get();
             double moistureGrowthMul = (1.0D / 7.0D) * moisture;
 
             if (level.getRandom().nextDouble() > (moistureGrowthMul * growthRate)) {
@@ -56,7 +54,7 @@ public class CommonMixinHooks {
      * @return an Iterable containing the BlockPos bounds to check for water around farmland.
      */
     public static Iterable<BlockPos> getFarmlandCheckBounds(BlockPos origin) {
-        final int waterRange = DSCommonConfig.COMMON.waterRange.get();
+        final int waterRange = DSComGeneralConfig.CONFIG.waterRange.get();
         return BlockPos.betweenClosed(origin.offset(-waterRange, 0, -waterRange), origin.offset(waterRange, 1, waterRange));
     }
 
@@ -75,14 +73,14 @@ public class CommonMixinHooks {
     public static void onFarmlandTick(BlockState state, RandomSource random, BlockPos pos, ServerLevel level, CallbackInfo ci) {
         int moisture = state.getValue(FarmBlock.MOISTURE);
 
-        if (DSCommonConfig.COMMON.freezeFarmland.get()) {
+        if (DSComGeneralConfig.CONFIG.freezeFarmland.get()) {
             if (BlockHelper.shouldFreezeFarmlandAt(level, pos)) {
                 level.setBlock(pos, DSBlocks.FROZEN_FARMLAND.get().defaultBlockState().setValue(FrozenFarmBlock.MOISTURE, moisture), 2);
                 ci.cancel();
                 return;
             }
         }
-        if (DSCommonConfig.COMMON.vaporiseMoisture.get()) {
+        if (DSComGeneralConfig.CONFIG.vaporiseMoisture.get()) {
             if (BlockHelper.shouldEvaporateAt(level, pos)) {
                 level.setBlock(pos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, --moisture), 2);
 
@@ -101,7 +99,7 @@ public class CommonMixinHooks {
                 }
             }
         }
-        if (moisture > 0 && random.nextDouble() > DSCommonConfig.COMMON.farmlandDryingRate.get())
+        if (moisture > 0 && random.nextDouble() > DSComGeneralConfig.CONFIG.farmlandDryingRate.get())
             ci.cancel();
     }
 }

@@ -2,7 +2,7 @@ package com.sarinsa.dampsoil.common.tile;
 
 import com.sarinsa.dampsoil.common.block.SprinklerBlock;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.ToughAsNailsHelper;
-import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
+import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
 import net.minecraft.core.BlockPos;
@@ -20,6 +20,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -80,7 +81,7 @@ public class SprinklerBlockEntity extends BlockEntity {
         // Are we sprinklin'? :^)
         if (state.getValue(SprinklerBlock.SPRINKLING)) {
             final int radius = sprinkler.getRadius();
-            boolean requirePiping = DSCommonConfig.COMMON.requirePiping.get();
+            boolean requirePiping = DSComGeneralConfig.CONFIG.requirePiping.get();
 
             // Are we configured to need water pipes? If so, check for that and do what needs to be done
             if (requirePiping) {
@@ -103,7 +104,7 @@ public class SprinklerBlockEntity extends BlockEntity {
             RandomSource random = level.getRandom();
             // Make some sad vapor particles if it's too
             // hot in this dimension to sprinkle.
-            if (!DSCommonConfig.COMMON.canSprinkleInUltrawarm.get() && level.dimensionType().ultraWarm()) {
+            if (!DSComGeneralConfig.CONFIG.canSprinkleInUltrawarm.get() && level.dimensionType().ultraWarm()) {
                 vaporParticles(level, pos);
             }
             else {
@@ -143,14 +144,14 @@ public class SprinklerBlockEntity extends BlockEntity {
                 AABB range = new AABB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
 
                 // Tough As Nails compat: cool down players
-                if (DSCommonConfig.COMMON.sprinklerCoolsPlayer.get()) {
+                if (DSComGeneralConfig.CONFIG.sprinklerCoolsPlayer.get()) {
                     for (Player player : level.getEntitiesOfClass(Player.class, range, player -> !player.isCreative() && !player.isSpectator())) {
                         ToughAsNailsHelper.coolPlayer(player);
                     }
                 }
 
                 // entity interactions
-                if (DSCommonConfig.COMMON.mobInteractions.get()) {
+                if (DSComGeneralConfig.CONFIG.mobInteractions.get()) {
                     if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN)
                         range = range.move(0, -3, 0);
 
