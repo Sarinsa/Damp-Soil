@@ -11,7 +11,7 @@ logoFile="logo.png"
 credits="RandomMcSomethin (original author)"
 authors="Sarinsa"
 description='''
-Introduces some changes to how farmland works, how crops grow and a couple other things. Also comes with sprinklers for all your sprinkly needs!'''
+Introduces some changes to how farmland works, how crops grow and a couple other farming related things. Also comes with sprinklers for all your sprinkly needs!'''
 [[dependencies.dampsoil]]
     modId="forge"
     mandatory=true
