@@ -8,7 +8,7 @@ public class TempModifiers {
 
     private static final IPlayerTemperatureModifier sprinklerMod = (player, temperatureLevel) -> {
         if (ToughAsNailsHelper.isPlayerSprinkled(player)) {
-            return SereneSeasonsHelper.isWinterSeason(player.level) ? TemperatureLevel.ICY : TemperatureLevel.COLD;
+            return SereneSeasonsHelper.isWinter(player.level) ? TemperatureLevel.ICY : TemperatureLevel.COLD;
         }
         return temperatureLevel;
     };

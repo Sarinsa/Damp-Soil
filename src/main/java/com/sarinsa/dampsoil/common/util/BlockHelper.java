@@ -35,7 +35,7 @@ public class BlockHelper {
     public static boolean shouldFreezeFarmlandAt(Level level, BlockPos pos) {
         if (level.getBlockState(pos).is(Blocks.FARMLAND)) {
             int moisture = level.getBlockState(pos).getValue(FarmBlock.MOISTURE);
-            return (!level.getBiome(pos).get().warmEnoughToRain(pos) || SereneSeasonsHelper.isWinterSeason(level))
+            return (!level.getBiome(pos).get().warmEnoughToRain(pos) || SereneSeasonsHelper.isWinter(level))
                     && level.getBrightness(LightLayer.BLOCK, pos) < 10 && pos.getY() > 30 && moisture > 0;
         }
         return false;

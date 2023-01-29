@@ -1,6 +1,7 @@
 package com.sarinsa.dampsoil.common.util.mixin;
 
 import com.sarinsa.dampsoil.common.block.FrozenFarmBlock;
+import com.sarinsa.dampsoil.common.core.DampSoil;
 import com.sarinsa.dampsoil.common.core.config.DSCommonConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
@@ -29,18 +30,23 @@ public class CommonMixinHooks {
      * slow down crop growth.
      */
     public static void onCropRandomTick(Level level, BlockPos pos, CallbackInfo ci) {
-        // Kill off crops on dry soil
-        if (DSCommonConfig.COMMON.cropsDie.get()) {
-            BlockState state = level.getBlockState(pos.below());
+        if (level.getBlockState(pos.below()).getBlock() instanceof FarmBlock) {
+            int moisture = level.getBlockState(pos.below()).getValue(FarmBlock.MOISTURE);
 
-            if (state.getBlock() instanceof FarmBlock && state.getValue(FarmBlock.MOISTURE) < 1) {
-                level.setBlock(pos, DSBlocks.DEAD_CROP.get().defaultBlockState(), 2);
-                level.playSound(null, pos, SoundEvents.COMPOSTER_READY, SoundSource.BLOCKS, 0.65F, 0.5F);
+            // Kill off crops on dry soil
+            if (DSCommonConfig.COMMON.cropsDie.get()) {
+                if (moisture < 1) {
+                    level.setBlock(pos, DSBlocks.DEAD_CROP.get().defaultBlockState(), 2);
+                    level.playSound(null, pos, SoundEvents.COMPOSTER_READY, SoundSource.BLOCKS, 0.65F, 0.5F);
+                }
             }
-        }
-        // Maybe cancel crop growth
-        if (level.getRandom().nextDouble() > 1.0 / (float) DSCommonConfig.COMMON.growthRate.get()) {
-            ci.cancel();
+            // Maybe cancel crop growth
+            double growthRate = 1.0D / DSCommonConfig.COMMON.growthRate.get();
+            double moistureGrowthMul = (1.0D / 7.0D) * moisture;
+
+            if (level.getRandom().nextDouble() > (moistureGrowthMul * growthRate)) {
+                ci.cancel();
+            }
         }
     }
 

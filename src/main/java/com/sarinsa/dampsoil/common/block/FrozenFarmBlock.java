@@ -37,7 +37,7 @@ public class FrozenFarmBlock extends Block {
 
     @Override
     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource randomSource) {
-        if ((level.getBrightness(LightLayer.BLOCK, pos) > 11 - state.getLightBlock(level, pos)) || !SereneSeasonsHelper.isWinterSeason(level)) {
+        if ((level.getBrightness(LightLayer.BLOCK, pos) > 11 - state.getLightBlock(level, pos)) || !SereneSeasonsHelper.isWinter(level)) {
             level.setBlockAndUpdate(pos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, state.getValue(MOISTURE)));
         }
     }

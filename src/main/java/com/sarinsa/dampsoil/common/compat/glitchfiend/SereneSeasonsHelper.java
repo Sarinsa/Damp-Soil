@@ -10,13 +10,22 @@ public class SereneSeasonsHelper {
     private static final String MODID = "sereneseasons";
 
 
-    public static boolean isWinterSeason(Level level) {
+    public static boolean isWinter(Level level) {
         return isSeason(level, Season.WINTER);
     }
 
-    public static boolean isSpringSeason(Level level) {
+    public static boolean isSpring(Level level) {
         return isSeason(level, Season.SPRING);
     }
+
+    public static boolean isSummer(Level level) {
+        return isSeason(level, Season.SPRING);
+    }
+
+    public static boolean isAutumn(Level level) {
+        return isSeason(level, Season.SPRING);
+    }
+
 
     private static boolean isSeason(Level level, Season seasonState) {
         if (ModList.get().isLoaded(MODID)) {

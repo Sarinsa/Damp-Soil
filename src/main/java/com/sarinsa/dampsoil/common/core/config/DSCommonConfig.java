@@ -18,7 +18,9 @@ public class DSCommonConfig {
 
         public final ForgeConfigSpec.BooleanValue cropsDie;
         public final ForgeConfigSpec.IntValue waterRange;
+        public final ForgeConfigSpec.IntValue waterEffectiveness;
         public final ForgeConfigSpec.IntValue growthRate;
+        public final ForgeConfigSpec.BooleanValue moistureGrowthMul;
         public final ForgeConfigSpec.IntValue boneMealEfficiency;
         public final ForgeConfigSpec.DoubleValue farmlandDryingRate;
         public final ForgeConfigSpec.IntValue sprinklerActivationTime;
@@ -45,8 +47,14 @@ public class DSCommonConfig {
             waterRange = configBuilder.comment("Determines the effective radius of a water block to moisturize nearby farmland.")
                             .defineInRange("waterRange", 1, 1, 7);
 
+            waterEffectiveness = configBuilder.comment("Determines how moisturized farmland can get from nearby water sources. 0 means zero moisture, 7 means max moisture level.")
+                    .defineInRange("waterEffectiveness", 4, 1, 7);
+
             growthRate = configBuilder.comment("Determines the chance for a crop to grow. A value of 4 would equal a 1/4 chance for the crop to grow when it is ticked.")
                             .defineInRange("growthRate", 7, 1, 10);
+
+            moistureGrowthMul = configBuilder.comment("If enabled, crop growth speed will be affected by the level of moisture in the soil. This ranges from no growth in dry farmland to normal growth speed in fully moisturized farmland.")
+                    .define("moistureGrowthMul", true);
 
             boneMealEfficiency = configBuilder.comment("Determines the chance for bone meal to further grow a crop. A value of 4 would equal a 1/4 chance for using bone meal to work.")
                             .defineInRange("boneMealEfficiency", 3, 1, 10);
