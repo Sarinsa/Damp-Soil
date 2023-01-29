@@ -15,6 +15,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import sereneseasons.api.season.Season;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = DampSoil.MODID)
@@ -56,6 +57,14 @@ public class ConfigReloadListener {
                         SeasonRepresentable representable = SeasonRepresentable.getFromName(s);
 
                         if (representable != null) {
+                            // Special case. Add all sub-seasons to the list
+                            // and continue iterating through the next entry.
+                            if (representable == SeasonRepresentable.ALL) {
+                                subSeasons.clear();
+                                subSeasons.addAll(Arrays.asList(Season.SubSeason.values()));
+                                AnimalBreedListener.BREEDING_SEASONS.put(ForgeRegistries.ENTITY_TYPES.getValue(entityName), subSeasons);
+                                break;
+                            }
                             subSeasons.add(SereneSeasonsHelper.getFromSeasonRepresentable(representable));
                         }
                     }

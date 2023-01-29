@@ -53,8 +53,8 @@ public class DampSoil {
         MinecraftForge.EVENT_BUS.register(new DSEventListener());
 
         ModLoadingContext context = ModLoadingContext.get();
-        context.registerConfig(ModConfig.Type.COMMON, DSComGeneralConfig.CONFIG_SPEC, "dampsoil/main.toml");
         context.registerConfig(ModConfig.Type.COMMON, DSComBreedingConfig.CONFIG_SPEC, "dampsoil/breeding_seasons.toml");
+        context.registerConfig(ModConfig.Type.COMMON, DSComGeneralConfig.CONFIG_SPEC, "dampsoil/main.toml");
     }
 
     public void onCommonSetup(FMLCommonSetupEvent event) {

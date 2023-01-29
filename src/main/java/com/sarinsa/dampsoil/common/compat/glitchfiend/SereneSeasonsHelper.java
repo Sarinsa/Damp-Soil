@@ -55,7 +55,6 @@ public class SereneSeasonsHelper {
             case EARLY_AUTUMN -> Season.SubSeason.EARLY_AUTUMN;
             case MID_AUTUMN -> Season.SubSeason.MID_AUTUMN;
             case LATE_AUTUMN -> Season.SubSeason.LATE_AUTUMN;
-            // Return null if the parsed SeasonRepresentable is null or ALL.
             default -> null;
         };
     }
