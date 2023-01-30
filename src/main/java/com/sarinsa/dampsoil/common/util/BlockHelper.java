@@ -6,6 +6,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
+import net.minecraftforge.fml.ModList;
 
 public class BlockHelper {
 
@@ -35,7 +36,9 @@ public class BlockHelper {
     public static boolean shouldFreezeFarmlandAt(Level level, BlockPos pos) {
         if (level.getBlockState(pos).is(Blocks.FARMLAND)) {
             int moisture = level.getBlockState(pos).getValue(FarmBlock.MOISTURE);
-            return (!level.getBiome(pos).get().warmEnoughToRain(pos) || SereneSeasonsHelper.isWinter(level))
+
+            return !level.getBiome(pos).get().warmEnoughToRain(pos)
+                    || (ModList.get().isLoaded(SereneSeasonsHelper.MODID) && SereneSeasonsHelper.isWinter(level))
                     && level.getBrightness(LightLayer.BLOCK, pos) < 10 && pos.getY() > 30 && moisture > 0;
         }
         return false;
