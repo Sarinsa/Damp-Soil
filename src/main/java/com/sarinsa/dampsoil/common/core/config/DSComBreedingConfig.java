@@ -3,14 +3,17 @@ package com.sarinsa.dampsoil.common.core.config;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.SeasonRepresentable;
+import com.sarinsa.dampsoil.common.core.DampSoil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.xml.stream.events.Comment;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static com.sarinsa.dampsoil.common.compat.glitchfiend.SeasonRepresentable.*;
 
@@ -43,7 +46,7 @@ public class DSComBreedingConfig {
                     .comment("The registry name of the animal (meaning the name of the mod the animal is from, then the name of the animal), for instance \"minecraft:cow\".")
                     .comment("A valid list of season names that represent what seasons this animal can be bred in.")
                     .comment("")
-                    .comment("Valid seasons are: EARLY_SPRING, MID_SPRING, LATE_SPRING, EARLY_SUMMER, MID_SUMMER, LATE_SUMMER, EARLY_AUTUMN, MID_AUTUMN, LATE_AUTUMN, EARLY_WINTER, MID_WINTER, LATE_WINTER and ALL")
+                    .comment("Valid seasons are: EARLY_SPRING, MID_SPRING, LATE_SPRING, EARLY_SUMMER, MID_SUMMER, LATE_SUMMER, EARLY_AUTUMN, MID_AUTUMN, LATE_AUTUMN, EARLY_WINTER, MID_WINTER and LATE_WINTER")
                             .define("breedingSeasons", buildDefaultValues());
 
             configBuilder.pop();

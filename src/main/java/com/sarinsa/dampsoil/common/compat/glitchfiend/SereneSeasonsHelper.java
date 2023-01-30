@@ -38,8 +38,7 @@ public class SereneSeasonsHelper {
 
     /**
      * @return The corresponding {@link Season} enum from Serene Seasons depending on the value
-     * of the passed {@link SeasonRepresentable}. If the argument is null or {@link SeasonRepresentable#ALL},
-     * this also returns null.
+     * of the passed {@link SeasonRepresentable}.
      */
     @Nullable
     public static Season.SubSeason getFromSeasonRepresentable(SeasonRepresentable seasonRepresentable) {

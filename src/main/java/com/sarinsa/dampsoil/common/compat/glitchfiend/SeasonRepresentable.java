@@ -14,8 +14,7 @@ public enum SeasonRepresentable {
     LATE_AUTUMN("LATE_AUTUMN"),
     EARLY_WINTER("EARLY_WINTER"),
     MID_WINTER("MID_WINTER"),
-    LATE_WINTER("LATE_WINTER"),
-    ALL("ALL");
+    LATE_WINTER("LATE_WINTER");
 
     SeasonRepresentable(String name) {
         this.name = name;
