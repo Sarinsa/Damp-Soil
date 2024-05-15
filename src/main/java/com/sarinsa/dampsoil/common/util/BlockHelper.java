@@ -6,7 +6,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.fml.ModList;
+import sereneseasons.season.SeasonHooks;
 
 public class BlockHelper {
 
@@ -38,7 +41,7 @@ public class BlockHelper {
             int moisture = level.getBlockState(pos).getValue(FarmBlock.MOISTURE);
 
             return !level.getBiome(pos).get().warmEnoughToRain(pos)
-                    || (ModList.get().isLoaded(SereneSeasonsHelper.MODID) && SereneSeasonsHelper.isWinter(level))
+                    || (ModList.get().isLoaded(SereneSeasonsHelper.MODID) && SeasonHooks.coldEnoughToSnowHook(level.getBiome(pos).get(), pos, level))
                     && level.getBrightness(LightLayer.BLOCK, pos) < 10 && pos.getY() > 30 && moisture > 0;
         }
         return false;

@@ -14,15 +14,15 @@ import java.util.Map;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = DampSoil.MODID)
-public class ToughAsNailsHelper {
+public class SprinkledPlayersTracker {
 
-    public static final String MODID = "toughasnails";
+    public static final String TAN_MODID = "toughasnails";
 
     private static final Map<UUID, Boolean> SPRINKLED_PLAYERS = new HashMap<>();
 
 
     public static void coolPlayer(Player player) {
-        if (ModList.get().isLoaded(MODID)) {
+        if (ModList.get().isLoaded(TAN_MODID)) {
             if (TemperatureHelper.isTemperatureEnabled()) {
                 SPRINKLED_PLAYERS.put(player.getUUID(), true);
             }
@@ -30,10 +30,7 @@ public class ToughAsNailsHelper {
     }
 
     public static boolean isPlayerSprinkled(Player player) {
-        if (SPRINKLED_PLAYERS.containsKey(player.getUUID())) {
-            return true;
-        }
-       return false;
+        return SPRINKLED_PLAYERS.containsKey(player.getUUID());
     }
 
     @SubscribeEvent

@@ -20,33 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @SuppressWarnings("JavadocReference")
 public class CommonMixinHooks {
 
-    /**
-     * Called from {@link com.sarinsa.dampsoil.common.mixin.CropsBlockMixin#onRandomTick(BlockState, ServerLevel, BlockPos, RandomSource, CallbackInfo)}<br>
-     * <br>
-     * Checks if the crop block should die if it is on dry farmland,
-     * and checks if this random tick should be canceled altogether to
-     * slow down crop growth.
-     */
-    public static void onCropRandomTick(Level level, BlockPos pos, CallbackInfo ci) {
-        if (level.getBlockState(pos.below()).getBlock() instanceof FarmBlock) {
-            int moisture = level.getBlockState(pos.below()).getValue(FarmBlock.MOISTURE);
-
-            // Kill off crops on dry soil
-            if (DSComGeneralConfig.CONFIG.cropsDie.get()) {
-                if (moisture < 1) {
-                    level.setBlock(pos, DSBlocks.DEAD_CROP.get().defaultBlockState(), 2);
-                    level.playSound(null, pos, SoundEvents.COMPOSTER_READY, SoundSource.BLOCKS, 0.65F, 0.5F);
-                }
-            }
-            // Maybe cancel crop growth
-            double growthRate = 1.0D / DSComGeneralConfig.CONFIG.growthRate.get();
-            double moistureGrowthMul = (1.0D / 7.0D) * moisture;
-
-            if (level.getRandom().nextDouble() > (moistureGrowthMul * growthRate)) {
-                ci.cancel();
-            }
-        }
-    }
 
     /**
      * Called from {@link com.sarinsa.dampsoil.common.mixin.FarmlandBlockMixin#redirectIsWaterNearby(BlockPos, BlockPos, LevelReader, BlockPos)}<br>
@@ -70,7 +43,7 @@ public class CommonMixinHooks {
      * ALSO also, if we are in a biome with a temperature greater than 1.0, and the block is in direct sunlight,
      * evaporate moisture at normal tick speed.
      */
-    public static void onFarmlandTick(BlockState state, RandomSource random, BlockPos pos, ServerLevel level, CallbackInfo ci) {
+    public static void onFarmlandRandomTick(BlockState state, RandomSource random, BlockPos pos, ServerLevel level, CallbackInfo ci) {
         int moisture = state.getValue(FarmBlock.MOISTURE);
 
         if (DSComGeneralConfig.CONFIG.freezeFarmland.get()) {
@@ -80,6 +53,17 @@ public class CommonMixinHooks {
                 return;
             }
         }
+        checkAndVaporize(state, random, pos, level, moisture);
+
+        if (moisture > 0 && random.nextDouble() > DSComGeneralConfig.CONFIG.farmlandDryingRate.get())
+            ci.cancel();
+    }
+
+    public static void onFarmlandTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
+        checkAndVaporize(state, random, pos, level, state.getValue(FarmBlock.MOISTURE));
+    }
+
+    private static void checkAndVaporize(BlockState state, RandomSource random, BlockPos pos, ServerLevel level, int moisture) {
         if (DSComGeneralConfig.CONFIG.vaporiseMoisture.get()) {
             if (BlockHelper.shouldEvaporateAt(level, pos)) {
                 level.setBlock(pos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, --moisture), 2);
@@ -97,9 +81,9 @@ public class CommonMixinHooks {
                             0.02D
                     );
                 }
+                // Speed things up a bit
+                level.scheduleTick(pos, state.getBlock(), 30);
             }
         }
-        if (moisture > 0 && random.nextDouble() > DSComGeneralConfig.CONFIG.farmlandDryingRate.get())
-            ci.cancel();
     }
 }

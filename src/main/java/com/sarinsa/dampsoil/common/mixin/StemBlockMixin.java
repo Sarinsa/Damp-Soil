@@ -21,6 +21,5 @@ public abstract class StemBlockMixin extends BushBlock {
 
     @Inject(at = @At("HEAD"), method = "randomTick", cancellable = true)
     public void onRandomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
-        CommonMixinHooks.onCropRandomTick(level, pos, ci);
     }
 }

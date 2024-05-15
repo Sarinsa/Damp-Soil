@@ -1,10 +1,12 @@
 package com.sarinsa.dampsoil.common.tile;
 
+import com.sarinsa.dampsoil.api.SprinkleResults;
 import com.sarinsa.dampsoil.common.block.SprinklerBlock;
-import com.sarinsa.dampsoil.common.compat.glitchfiend.ToughAsNailsHelper;
+import com.sarinsa.dampsoil.common.compat.glitchfiend.SprinkledPlayersTracker;
 import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
+import net.minecraft.client.multiplayer.prediction.BlockStatePredictionHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -20,14 +22,15 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -132,9 +135,16 @@ public class SprinklerBlockEntity extends BlockEntity {
                     if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN) yOffset = 4;
 
                     BlockPos randomOffsetPos = pos.offset(random.nextInt(1 + 2 * radius) - radius, random.nextInt(3) - yOffset, random.nextInt(1 + 2 * radius) - radius);
-                    // moisten farmland
-                    if (level.getBlockState(randomOffsetPos).is(Blocks.FARMLAND) && level.getBlockState(randomOffsetPos).getValue(FarmBlock.MOISTURE) < FarmBlock.MAX_MOISTURE) {
-                        level.setBlock(randomOffsetPos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE), 2);
+                    BlockState currentState = level.getBlockState(randomOffsetPos);
+                    SprinkleResults.SprinkleResult result = SprinkleResults.get(currentState.getBlock());
+
+                    // Process sprinkled block (moisten farmland and other stuff)
+                    if (result != null) {
+                        BlockState newState = result.getState(level, randomOffsetPos, currentState);
+
+                        if (newState != currentState) {
+                            level.setBlock(randomOffsetPos, result.getState(level, randomOffsetPos, currentState), 2);
+                        }
                     }
                     // extinguish fires
                     if (level.getBlockState(randomOffsetPos).is(BlockTags.FIRE)) {
@@ -146,7 +156,7 @@ public class SprinklerBlockEntity extends BlockEntity {
                 // Tough As Nails compat: cool down players
                 if (DSComGeneralConfig.CONFIG.sprinklerCoolsPlayer.get()) {
                     for (Player player : level.getEntitiesOfClass(Player.class, range, player -> !player.isCreative() && !player.isSpectator())) {
-                        ToughAsNailsHelper.coolPlayer(player);
+                        SprinkledPlayersTracker.coolPlayer(player);
                     }
                 }
 

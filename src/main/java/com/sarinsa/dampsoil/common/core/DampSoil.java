@@ -1,9 +1,10 @@
 package com.sarinsa.dampsoil.common.core;
 
+import com.sarinsa.dampsoil.api.impl.DampSoilApi;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.AnimalBreedListener;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.SereneSeasonsHelper;
+import com.sarinsa.dampsoil.common.compat.glitchfiend.SprinkledPlayersTracker;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.TempModifiers;
-import com.sarinsa.dampsoil.common.compat.glitchfiend.ToughAsNailsHelper;
 import com.sarinsa.dampsoil.common.core.config.DSComBreedingConfig;
 import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
@@ -12,6 +13,7 @@ import com.sarinsa.dampsoil.common.core.registry.DSItems;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
 import com.sarinsa.dampsoil.common.event.DSEventListener;
 import com.sarinsa.dampsoil.common.network.PacketHandler;
+import com.sarinsa.dampsoil.common.tag.DSEntityTags;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -35,6 +37,8 @@ public class DampSoil {
     @SuppressWarnings("FieldCanBeLocal")
     private final PacketHandler packetHandler = new PacketHandler();
 
+    private final DampSoilApi api = DampSoilApi.INSTANCE;
+
 
     public DampSoil() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -51,6 +55,7 @@ public class DampSoil {
         addCompatListener(MinecraftForge.EVENT_BUS, AnimalBreedListener::new, SereneSeasonsHelper.MODID);
 
         MinecraftForge.EVENT_BUS.register(new DSEventListener());
+        MinecraftForge.EVENT_BUS.register(api.getProduceCooldownManager());
 
         ModLoadingContext context = ModLoadingContext.get();
         context.registerConfig(ModConfig.Type.COMMON, DSComBreedingConfig.CONFIG_SPEC, "dampsoil/breeding_seasons.toml");
@@ -59,7 +64,9 @@ public class DampSoil {
 
     public void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            if (ModList.get().isLoaded(ToughAsNailsHelper.MODID)) {
+            DSEntityTags.init();
+
+            if (ModList.get().isLoaded(SprinkledPlayersTracker.TAN_MODID)) {
                 TempModifiers.register();
             }
         });

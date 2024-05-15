@@ -36,11 +36,16 @@ public class DSComGeneralConfig {
         public final ForgeConfigSpec.BooleanValue sereneSeasonsCompat;
         public final ForgeConfigSpec.BooleanValue sprinklerCoolsPlayer;
 
+        public final ForgeConfigSpec.BooleanValue feedAnimalBabies;
+
+        public final ForgeConfigSpec.IntValue chickenEggCooldown;
+        public final ForgeConfigSpec.IntValue cowMilkCooldown;
+        public final ForgeConfigSpec.IntValue mooshroomStewCooldown;
 
 
         private Config(ForgeConfigSpec.Builder configBuilder) {
+            // GENERAL
             configBuilder.push("general");
-
             cropsDie = configBuilder.comment("If enabled, crops will die on dry farmland.")
                             .define("cropsDie", true);
 
@@ -80,16 +85,28 @@ public class DSComGeneralConfig {
             freezeFarmland = configBuilder.comment("If enabled, wet farmland will freeze in cold biomes.")
                             .define("freezeFarmland", true);
 
-            vaporiseMoisture = configBuilder.comment("If enabled, wet farmland will dry out at vanilla speed if in direct sunlight and in a biome with a temperature equal or greater than 1.0. ")
+            vaporiseMoisture = configBuilder.comment("If enabled, wet farmland will dry out quickly if in direct sunlight and in a biome with a temperature equal or greater than 1.0. ")
                             .define("vaporiseMoisture", true);
 
             canSprinkleInUltrawarm = configBuilder.comment("If enabled, sprinklers will function normally in ultra warm dimensions (like the nether). If disabled, the sprinkler will only spew out some sad vapor instead.")
                             .define("canSprinkleInUltrawarm", false);
-
             configBuilder.pop();
 
-            configBuilder.push("compat");
+            // ANIMALS
+            configBuilder.push("animals");
+            feedAnimalBabies = configBuilder.comment("If enabled, baby animals can not be fed to grow faster")
+                            .define("feedAnimalBabies", false);
+            chickenEggCooldown = configBuilder.comment("The amount of time in ticks chickens will be put on cooldown before they can lay an egg again.")
+                            .defineInRange("chickenEggCooldown", 10000, 20, Integer.MAX_VALUE);
+            cowMilkCooldown = configBuilder.comment("The amount of time in ticks cows will be put on cooldown before they can be milked again.")
+                            .defineInRange("cowMilkCooldown", 200, 0, Integer.MAX_VALUE);
+            mooshroomStewCooldown = configBuilder.comment("The amount of time in ticks mooshrooms will be put on cooldown before they can grant mushroom stew again.")
+                            .defineInRange("mooshroomStewCooldown", 200, 0, Integer.MAX_VALUE);
+            configBuilder.pop();
 
+
+            // COMPAT
+            configBuilder.push("compat");
             requirePiping = configBuilder.comment("Whether sprinklers need to be hooked up with fluid pipes to function.")
                             .define("requirePiping", false);
 
@@ -98,7 +115,6 @@ public class DSComGeneralConfig {
 
             sprinklerCoolsPlayer = configBuilder.comment("If Tough As Nails is installed and this option is enabled, players can cool down when standing close to an active sprinkler.")
                             .define("sprinklerCoolsPlayer", true);
-
             configBuilder.pop();
         }
     }

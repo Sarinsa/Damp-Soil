@@ -1,19 +1,18 @@
 package com.sarinsa.dampsoil.common.compat.glitchfiend;
 
 import com.sarinsa.dampsoil.common.core.config.DSComBreedingConfig;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import sereneseasons.api.season.Season;
 import sereneseasons.api.season.SeasonHelper;
+import sereneseasons.season.SeasonHooks;
 
 import java.util.HashMap;
 import java.util.List;
