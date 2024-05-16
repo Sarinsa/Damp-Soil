@@ -20,7 +20,7 @@ public class ClientRegister {
 
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event) {
-        event.register(DSParticles.SPRINKLER_SPLASH.get(), SprinklerSplashParticle.Factory::new);
-        event.register(DSParticles.WATER_VAPOR.get(), WaterVaporParticle.Factory::new);
+        event.registerSpriteSet(DSParticles.SPRINKLER_SPLASH.get(), SprinklerSplashParticle.Factory::new);
+        event.registerSpriteSet(DSParticles.WATER_VAPOR.get(), WaterVaporParticle.Factory::new);
     }
 }

@@ -4,6 +4,7 @@ import com.sarinsa.dampsoil.common.block.DeadCropBlock;
 import com.sarinsa.dampsoil.common.block.FrozenFarmBlock;
 import com.sarinsa.dampsoil.common.block.SprinklerBlock;
 import com.sarinsa.dampsoil.common.core.DampSoil;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
@@ -29,7 +30,8 @@ public class DSBlocks {
         return BLOCKS.register(name, supplier);
     }
 
-    private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> supplier, CreativeModeTab... creativeTabs) {
+    @SafeVarargs
+    private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> supplier, ResourceKey<CreativeModeTab>... creativeTabs) {
         RegistryObject<T> regObj = BLOCKS.register(name, supplier);
         DSItems.register(name, () -> new BlockItem(regObj.get(), new Item.Properties()), creativeTabs);
         return regObj;

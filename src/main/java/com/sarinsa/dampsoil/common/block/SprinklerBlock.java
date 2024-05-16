@@ -9,7 +9,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -18,7 +20,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Material;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -31,9 +32,11 @@ public class SprinklerBlock extends Block implements EntityBlock {
 
     private final Supplier<Integer> radius;
 
+
     public SprinklerBlock(Supplier<Integer> radiusSupplier) {
-        super(BlockBehaviour.Properties.of(Material.METAL)
+        super(BlockBehaviour.Properties.of()
                 .strength(2.0f)
+                .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops());
 
         registerDefaultState(stateDefinition.any()

@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[44,)"
+loaderVersion="[47,)"
 license="MIT license"
 issueTrackerURL="https://github.com/Sarinsa/Damp-Soil/issues"
 
@@ -15,20 +15,27 @@ Introduces some changes to how farmland works, how crops grow and a couple other
 [[dependencies.dampsoil]]
     modId="forge"
     mandatory=true
-    versionRange="[44,)"
+    versionRange="[47,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.dampsoil]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.3]"
+    versionRange="[1.20.1,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.dampsoil]]
     modId="sereneseasons"
     mandatory=false
-    versionRange="[8.2,)"
+    versionRange="[9.0,)"
+    ordering="BEFORE"
+    side="BOTH"
+
+[[dependencies.dampsoil]]
+    modId="toughasnails"
+    mandatory=false
+    versionRange="[9.0,)"
     ordering="BEFORE"
     side="BOTH"

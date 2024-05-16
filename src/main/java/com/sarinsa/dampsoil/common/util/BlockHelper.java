@@ -41,7 +41,7 @@ public class BlockHelper {
             int moisture = level.getBlockState(pos).getValue(FarmBlock.MOISTURE);
 
             return !level.getBiome(pos).get().warmEnoughToRain(pos)
-                    || (ModList.get().isLoaded(SereneSeasonsHelper.MODID) && SeasonHooks.coldEnoughToSnowHook(level.getBiome(pos).get(), pos, level))
+                    || (ModList.get().isLoaded(SereneSeasonsHelper.MODID) && SeasonHooks.coldEnoughToSnowSeasonal(level, level.getBiome(pos), pos))
                     && level.getBrightness(LightLayer.BLOCK, pos) < 10 && pos.getY() > 30 && moisture > 0;
         }
         return false;

@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "com.sarinsa.dampsoil.common.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "refmap": "dampsoil.mixins.refmap.json",
   "mixins": [

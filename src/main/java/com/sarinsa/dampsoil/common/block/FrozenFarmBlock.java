@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -28,7 +28,7 @@ public class FrozenFarmBlock extends Block {
 
     public FrozenFarmBlock() {
         super(BlockBehaviour.Properties.copy(Blocks.FARMLAND)
-                .color(MaterialColor.TERRACOTTA_WHITE)
+                .mapColor(MapColor.TERRACOTTA_WHITE)
                 .sound(SoundType.STONE)
                 .strength(1.0F));
 

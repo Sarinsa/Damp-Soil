@@ -22,7 +22,7 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
 
     @SubscribeEvent
     public void tickEntity(LivingEvent.LivingTickEvent event) {
-        if (!event.getEntity().level.isClientSide && event.getEntity().getType().is(DSEntityTags.COOLDOWNABLE_MOBS)) {
+        if (!event.getEntity().level().isClientSide && event.getEntity().getType().is(DSEntityTags.COOLDOWNABLE_MOBS)) {
             tickAllCooldowns(event.getEntity());
         }
     }
@@ -33,7 +33,7 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
             return true;
         if (!livingEntity.getType().is(DSEntityTags.COOLDOWNABLE_MOBS))
             return true;
-        if (livingEntity.level.isClientSide) return false;
+        if (livingEntity.level().isClientSide) return false;
 
         return getCooldownForQueue(queue, livingEntity) <= 0;
     }
@@ -44,7 +44,7 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
             return;
         if (!livingEntity.getType().is(DSEntityTags.COOLDOWNABLE_MOBS))
             return;
-        if (livingEntity.level.isClientSide) return;
+        if (livingEntity.level().isClientSide) return;
 
         setCooldownForQueue(queue, livingEntity, cooldown);
     }

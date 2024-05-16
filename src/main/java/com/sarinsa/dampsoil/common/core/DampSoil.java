@@ -22,6 +22,9 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +55,7 @@ public class DampSoil {
 
         modBus.addListener(DSItems::onCreativeTabPopulate);
         modBus.addListener(this::onCommonSetup);
+        modBus.addListener(this::onInterModEnqueue);
         addCompatListener(MinecraftForge.EVENT_BUS, AnimalBreedListener::new, SereneSeasonsHelper.MODID);
 
         MinecraftForge.EVENT_BUS.register(new DSEventListener());
@@ -63,9 +67,11 @@ public class DampSoil {
     }
 
     public void onCommonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            DSEntityTags.init();
+        event.enqueueWork(DSEntityTags::init);
+    }
 
+    public void onInterModEnqueue(InterModEnqueueEvent event) {
+        event.enqueueWork(() -> {
             if (ModList.get().isLoaded(SprinkledPlayersTracker.TAN_MODID)) {
                 TempModifiers.register();
             }

@@ -20,6 +20,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Bee;
@@ -168,7 +169,7 @@ public class SprinklerBlockEntity extends BlockEntity {
                     for (Entity entity : level.getEntitiesOfClass(Entity.class, range, entity -> true)) {
                         // hurt mobs sensitive to water
                         if (entity instanceof LivingEntity && (((LivingEntity) entity).isSensitiveToWater() || entity instanceof Bee)) {
-                            entity.hurt(DamageSource.DROWN, 1.0F);
+                            entity.hurt(entity.damageSources().drown(), 1.0F);
                         }
                         // extinguish entities
                         if (entity.getRemainingFireTicks() > 0) {
