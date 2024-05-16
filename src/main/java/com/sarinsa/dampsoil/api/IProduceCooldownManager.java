@@ -5,7 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.UUID;
 
 /**
- * The produce watcher is responsible for managing various cooldowns on
+ * The produce watcher is a server-side tick manager responsible for various cooldowns on
  * animals that produce resources, such as milk from cows and eggs from chickens etc.
  * <p></p>
  * The implementation of this can be obtained via {@link IDampSoilApi#getProduceCooldownManager()}.
@@ -21,12 +21,12 @@ public interface IProduceCooldownManager {
     /**
      * @param cooldownQueue A {@link CooldownQueue} representing the cooldown timer you wish to check.<br><br>
      * @param entity The animal to check.<br><br>
-     * @return True if the given animal is on cooldown in the specified timer.
+     * @return True if the given animal is on cooldown in the specified timer. Always returns false on client.
      */
     boolean canProduce(LivingEntity entity, CooldownQueue cooldownQueue);
 
     /**
-     * Puts the given entity on cooldown in the specified cooldown queue.
+     * Puts the given entity on cooldown in the specified cooldown queue. Does nothing on client.
      * <p></p>
      * @param entity The animal to put on cooldown.<br><br>
      * @param cooldownQueue A {@link CooldownQueue} representing a cooldown timer to add a cooldown to.

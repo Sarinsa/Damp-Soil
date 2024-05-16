@@ -2,6 +2,7 @@ package com.sarinsa.dampsoil.common.event;
 
 import com.sarinsa.dampsoil.api.CooldownQueue;
 import com.sarinsa.dampsoil.api.impl.DampSoilApi;
+import com.sarinsa.dampsoil.common.core.DampSoil;
 import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import net.minecraft.core.BlockPos;
