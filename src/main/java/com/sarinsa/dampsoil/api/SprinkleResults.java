@@ -28,7 +28,6 @@ public final class SprinkleResults {
     // Default logic for vanilla farmland. This can be overridden if desired.
     static {
         registerResult(Blocks.FARMLAND, (level, pos, original) -> Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE));
-        registerResult(DSBlocks.DEAD_CROP, (level, pos, original) -> null);
     }
 
 
