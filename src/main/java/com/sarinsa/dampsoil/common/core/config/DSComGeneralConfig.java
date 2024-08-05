@@ -49,8 +49,8 @@ public class DSComGeneralConfig {
             cropsDie = configBuilder.comment("If enabled, crops will die on dry farmland.")
                             .define("cropsDie", true);
 
-            waterRange = configBuilder.comment("Determines the effective radius of a water block to moisturize nearby farmland.")
-                            .defineInRange("waterRange", 1, 1, 7);
+            waterRange = configBuilder.comment("Determines the effective radius of a water block to moisturize nearby farmland. Can be set to 0 to completely stop water sources from moisturizing farmland. 4 is the vanilla Minecraft value.")
+                            .defineInRange("waterRange", 1, 0, 7);
 
             waterEffectiveness = configBuilder.comment("Determines how moisturized farmland can get from nearby water sources. 0 means zero moisture, 7 means max moisture level.")
                     .defineInRange("waterEffectiveness", 4, 1, 7);

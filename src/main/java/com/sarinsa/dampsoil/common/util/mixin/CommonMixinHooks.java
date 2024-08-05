@@ -17,6 +17,8 @@ import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
+
 @SuppressWarnings("JavadocReference")
 public class CommonMixinHooks {
 
@@ -28,6 +30,9 @@ public class CommonMixinHooks {
      */
     public static Iterable<BlockPos> getFarmlandCheckBounds(BlockPos origin) {
         final int waterRange = DSComGeneralConfig.CONFIG.waterRange.get();
+
+        if (waterRange < 1) return List.of(origin);
+
         return BlockPos.betweenClosed(origin.offset(-waterRange, 0, -waterRange), origin.offset(waterRange, 1, waterRange));
     }
 
