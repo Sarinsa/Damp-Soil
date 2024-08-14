@@ -16,6 +16,7 @@ public class DSComGeneralConfig {
 
     public static final class Config {
 
+        public final ForgeConfigSpec.BooleanValue maxMoistureOnTill;
         public final ForgeConfigSpec.BooleanValue cropsDie;
         public final ForgeConfigSpec.IntValue waterRange;
         public final ForgeConfigSpec.IntValue waterEffectiveness;
@@ -46,6 +47,9 @@ public class DSComGeneralConfig {
         private Config(ForgeConfigSpec.Builder configBuilder) {
             // GENERAL
             configBuilder.push("general");
+            maxMoistureOnTill = configBuilder.comment("If enabled, farmland will always start out at max moisture when just tilled.")
+                    .define("maxMoistureOnTill", true);
+
             cropsDie = configBuilder.comment("If enabled, crops will die on dry farmland.")
                             .define("cropsDie", true);
 

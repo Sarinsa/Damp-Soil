@@ -98,7 +98,7 @@ public class DSEventListener {
      */
     @SubscribeEvent
     public void onBlockToolModification(BlockEvent.BlockToolModificationEvent event) {
-        if (!event.isSimulated()) {
+        if (CONFIG.maxMoistureOnTill.get() && !event.isSimulated()) {
             if (event.getToolAction() == ToolActions.HOE_TILL) {
                 BlockState finalState = event.getFinalState();
 

@@ -7,10 +7,7 @@ import com.sarinsa.dampsoil.common.core.registry.DSParticles;
 import com.sarinsa.dampsoil.common.util.BlockHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
@@ -64,6 +61,7 @@ public class CommonMixinHooks {
             ci.cancel();
     }
 
+    @SuppressWarnings("unused")
     public static void onFarmlandTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
         checkAndVaporize(state, random, pos, level, state.getValue(FarmBlock.MOISTURE));
     }
