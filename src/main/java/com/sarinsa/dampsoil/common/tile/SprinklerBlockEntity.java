@@ -247,27 +247,32 @@ public class SprinklerBlockEntity extends BlockEntity {
     }
 
     protected static void splashParticles(int radius, Level level, BlockPos pos) {
-        double speedMul = 30.0D * radius / 2.0D;
-        RandomSource random = level.random;
-        int count = 6 * (radius / 2);
+        // Make sure wherever the sprinkler is, is still loaded.
+        // Weird things can happen if the player is suddenly moved far away for any reason
+        // and things are unloaded before we are done spawning splash particles
+        if (level.isLoaded(pos)) {
+            double speedMul = 30.0D * radius / 2.0D;
+            RandomSource random = level.random;
+            int count = 6 * (radius / 2);
 
-        for (int i = 0; i < count; ++i) {
-            double xSpeed = (double)random.nextFloat() - 0.5D;
-            double zSpeed = (double)random.nextFloat() - 0.5D;
-            double ySpeed = -1.0D;
+            for (int i = 0; i < count; ++i) {
+                double xSpeed = (double) random.nextFloat() - 0.5D;
+                double zSpeed = (double) random.nextFloat() - 0.5D;
+                double ySpeed = -1.0D;
 
-            if (level.getBlockState(pos).getValue(SprinklerBlock.FACING) == Direction.UP)
-                ySpeed = 1.0D;
+                if (level.getBlockState(pos).getValue(SprinklerBlock.FACING) == Direction.UP)
+                    ySpeed = 1.0D;
 
-            double yOffset = ySpeed < 0.0D ? -0.001D : 1.0D;
+                double yOffset = ySpeed < 0.0D ? -0.001D : 1.0D;
 
-            level.addParticle(DSParticles.SPRINKLER_SPLASH.get(),
-                    (double) pos.getX() + 0.5D,
-                    (double) pos.getY() + yOffset,
-                    (double)pos.getZ() + 0.5D,
-                    xSpeed * speedMul,
-                    ySpeed * 60.0D,
-                    zSpeed * speedMul);
+                level.addParticle(DSParticles.SPRINKLER_SPLASH.get(),
+                        (double) pos.getX() + 0.5D,
+                        (double) pos.getY() + yOffset,
+                        (double) pos.getZ() + 0.5D,
+                        xSpeed * speedMul,
+                        ySpeed * 60.0D,
+                        zSpeed * speedMul);
+            }
         }
     }
 
