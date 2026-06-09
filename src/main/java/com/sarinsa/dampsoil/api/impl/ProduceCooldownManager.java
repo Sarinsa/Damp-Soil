@@ -22,32 +22,48 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
         }
     }
     
+    /**
+     * @param cooldownQueue A {@link CooldownQueue} representing the cooldown timer you wish to check.
+     * @param entity        The animal to check.
+     * @return True if the given animal is on cooldown in the specified timer. Always returns false on client.
+     */
     @Override
-    public boolean canProduce( LivingEntity livingEntity, CooldownQueue queue ) {
-        if( livingEntity == null || queue == null )
+    @SuppressWarnings( "resource" )
+    public boolean canProduce( LivingEntity entity, CooldownQueue cooldownQueue ) {
+        if( entity == null || cooldownQueue == null )
             return true;
-        if( !livingEntity.getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) )
+        if( !entity.getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) )
             return true;
-        if( livingEntity.level().isClientSide ) return false;
+        if( entity.level().isClientSide ) return false;
         
-        return getCooldownForQueue( queue, livingEntity ) <= 0;
+        return getCooldownForQueue( cooldownQueue, entity ) <= 0;
     }
     
+    /**
+     * Puts the given entity on cooldown in the specified cooldown queue. Does nothing on client.
+     *
+     * @param entity        The animal to put on cooldown.
+     * @param cooldownQueue A {@link CooldownQueue} representing a cooldown timer to add a cooldown to.
+     *                      Which type to use is entirely up to you. You can choose between 3 different cooldown timers.
+     *                      See {@link CooldownQueue} for more information.
+     * @param cooldown      The amount of cooldown ticks.
+     */
     @Override
-    public void setRecentlyProduced( LivingEntity livingEntity, CooldownQueue queue, int cooldown ) {
-        if( livingEntity == null || queue == null )
+    @SuppressWarnings( "resource" )
+    public void setRecentlyProduced( LivingEntity entity, CooldownQueue cooldownQueue, int cooldown ) {
+        if( entity == null || cooldownQueue == null )
             return;
-        if( !livingEntity.getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) )
+        if( !entity.getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) )
             return;
-        if( livingEntity.level().isClientSide ) return;
+        if( entity.level().isClientSide ) return;
         
-        setCooldownForQueue( queue, livingEntity, cooldown );
+        setCooldownForQueue( cooldownQueue, entity, cooldown );
     }
     
     private void tickCooldown( CooldownQueue queue, LivingEntity livingEntity ) {
-        CompoundTag modData = livingEntity.getPersistentData().getCompound( MOD_DATA_KEY );
-        CompoundTag cooldownsTag = modData.getCompound( COOLDOWNS_KEY );
-        CompoundTag cooldown = cooldownsTag.getCompound( queue.getTagName() );
+        final CompoundTag modData = livingEntity.getPersistentData().getCompound( MOD_DATA_KEY );
+        final CompoundTag cooldownsTag = modData.getCompound( COOLDOWNS_KEY );
+        final CompoundTag cooldown = cooldownsTag.getCompound( queue.getTagName() );
         
         int currentValue = cooldown.getInt( "Cooldown" );
         
@@ -60,8 +76,8 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
         // If this mob has never been put on cooldown before, don't bother ticking
         if( !livingEntity.getPersistentData().contains( MOD_DATA_KEY ) ) return;
         
-        CompoundTag modData = livingEntity.getPersistentData().getCompound( MOD_DATA_KEY );
-        CompoundTag cooldownsTag = modData.getCompound( COOLDOWNS_KEY );
+        final CompoundTag modData = livingEntity.getPersistentData().getCompound( MOD_DATA_KEY );
+        final CompoundTag cooldownsTag = modData.getCompound( COOLDOWNS_KEY );
         
         for( CooldownQueue queue : CooldownQueue.values() ) {
             CompoundTag cooldown = cooldownsTag.getCompound( queue.getTagName() );
@@ -75,9 +91,9 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
     
     private void setCooldownForQueue( CooldownQueue queue, LivingEntity livingEntity, int timeTicks ) {
         if( !livingEntity.getPersistentData().contains( MOD_DATA_KEY ) ) {
-            CompoundTag modData = new CompoundTag();
-            CompoundTag cooldownsTag = new CompoundTag();
-            CompoundTag cooldown = new CompoundTag();
+            final CompoundTag modData = new CompoundTag();
+            final CompoundTag cooldownsTag = new CompoundTag();
+            final CompoundTag cooldown = new CompoundTag();
             cooldown.putInt( "Cooldown", timeTicks );
             
             cooldownsTag.put( queue.getTagName(), cooldown );
@@ -85,9 +101,9 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
             livingEntity.getPersistentData().put( MOD_DATA_KEY, modData );
         }
         else {
-            CompoundTag modData = livingEntity.getPersistentData().getCompound( MOD_DATA_KEY );
-            CompoundTag cooldownsTag = modData.getCompound( COOLDOWNS_KEY );
-            CompoundTag cooldown = cooldownsTag.getCompound( queue.getTagName() );
+            final CompoundTag modData = livingEntity.getPersistentData().getCompound( MOD_DATA_KEY );
+            final CompoundTag cooldownsTag = modData.getCompound( COOLDOWNS_KEY );
+            final CompoundTag cooldown = cooldownsTag.getCompound( queue.getTagName() );
             
             cooldown.putInt( "Cooldown", timeTicks );
         }
@@ -97,11 +113,11 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
         CompoundTag persistentData = livingEntity.getPersistentData();
         
         if( persistentData.contains( MOD_DATA_KEY, Tag.TAG_COMPOUND ) ) {
-            CompoundTag modData = persistentData.getCompound( MOD_DATA_KEY );
+            final CompoundTag modData = persistentData.getCompound( MOD_DATA_KEY );
             
             if( modData.contains( COOLDOWNS_KEY, Tag.TAG_COMPOUND ) ) {
-                CompoundTag cooldownsTag = modData.getCompound( COOLDOWNS_KEY );
-                CompoundTag cooldown = cooldownsTag.getCompound( queue.getTagName() );
+                final CompoundTag cooldownsTag = modData.getCompound( COOLDOWNS_KEY );
+                final CompoundTag cooldown = cooldownsTag.getCompound( queue.getTagName() );
                 
                 return cooldown.getInt( "Cooldown" );
             }

@@ -12,6 +12,7 @@ buildscript {
 plugins {
     id 'eclipse'
     id 'maven-publish'
+    id 'idea'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
@@ -95,14 +96,14 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "Damp Soil",
-            "Specification-Vendor": "Sarinsa",
-            "Specification-Version": "1", //
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"Sarinsa",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "dampsoil.mixins.json"
+                "Specification-Title"     : "Damp Soil",
+                "Specification-Vendor"    : "Sarinsa",
+                "Specification-Version"   : "1", //
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "Sarinsa",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConfigs"            : "dampsoil.mixins.json"
         ])
     }
 }
@@ -124,4 +125,11 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
 }
