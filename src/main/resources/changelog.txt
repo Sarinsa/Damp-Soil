@@ -1,0 +1,35 @@
+1.20.1-4.2.10
+    - Fixed client-side crash that would occur if the player is quickly moved far away from an active sprinkler so it becomes unloaded
+1.20.1-4.2.9
+    - Added config option for whether hoe tilling starts farmland out at max moisture
+    - Fixed broken netherite sprinkler recipe
+1.20.1-4.2.8
+    - Config option waterRange can now be set to 0, effectively stopping water source blocks from being able to moisturize farmland
+1.20.1-4.2.7
+    - Ported to 1.20.1
+    - Fixed dead crops crashing the game when sprinkled
+1.19.3-3.2.7
+    - New animal produce cooldown manager
+    - Made farmland dry out faster in hot biomes under direct sunlight
+1.19.3-3.1.7
+    - Ported to 1.19.3
+    - Fixed broken recipe advancement for the sprinkler
+    - Removed a useless config value type
+    - Added Serene Seasons compat:
+        -Farmland can now freeze during winter season
+        -With Serene Seasons installed, the user can configure during which seasons certain animals can breed
+    -Added Tough As Nails compat:
+        -Sprinklers can now cool down players standing within its range
+1.19.2-3.0.3
+    - Ported to 1.19.2
+    - Added config option for letting wet farmland freeze in cold temperatures
+    - Added config option for letting wet farmland dry out faster when in direct sunlight and in a hot biome
+    - Added config option for whether sprinklers work in ultra warm biomes
+    - Fixed an incorrect tag entry in minecraft:mineable/pickaxe.json
+1.18.2-2.0.2
+    - Ported to 1.18.2
+    - Fixed incorrect entry added to minecraft:needs_stone_tool tag
+    - Fixed stem crops not dying on dry farmland (melon, pumpkin etc.)
+1.16.5-1.0.1
+    - Added Dead Crop block
+    - Changed some config field names
