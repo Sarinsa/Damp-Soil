@@ -4,18 +4,18 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class DSComGeneralConfig {
-
+    
     public static final Config CONFIG;
     public static final ForgeConfigSpec CONFIG_SPEC;
-
+    
     static {
-        Pair<Config, ForgeConfigSpec> commonPair = new ForgeConfigSpec.Builder().configure(Config::new);
+        Pair<Config, ForgeConfigSpec> commonPair = new ForgeConfigSpec.Builder().configure( Config::new );
         CONFIG = commonPair.getLeft();
         CONFIG_SPEC = commonPair.getRight();
     }
-
+    
     public static final class Config {
-
+        
         public final ForgeConfigSpec.BooleanValue maxMoistureOnTill;
         public final ForgeConfigSpec.BooleanValue cropsDie;
         public final ForgeConfigSpec.IntValue waterRange;
@@ -32,93 +32,93 @@ public class DSComGeneralConfig {
         public final ForgeConfigSpec.BooleanValue freezeFarmland;
         public final ForgeConfigSpec.BooleanValue vaporiseMoisture;
         public final ForgeConfigSpec.BooleanValue canSprinkleInUltrawarm;
-
+        
         public final ForgeConfigSpec.BooleanValue requirePiping;
         public final ForgeConfigSpec.BooleanValue sereneSeasonsCompat;
         public final ForgeConfigSpec.BooleanValue sprinklerCoolsPlayer;
-
+        
         public final ForgeConfigSpec.BooleanValue feedAnimalBabies;
-
+        
         public final ForgeConfigSpec.IntValue chickenEggCooldown;
         public final ForgeConfigSpec.IntValue cowMilkCooldown;
         public final ForgeConfigSpec.IntValue mooshroomStewCooldown;
-
-
-        private Config(ForgeConfigSpec.Builder configBuilder) {
+        
+        
+        private Config( ForgeConfigSpec.Builder configBuilder ) {
             // GENERAL
-            configBuilder.push("general");
-            maxMoistureOnTill = configBuilder.comment("If enabled, farmland will always start out at max moisture when just tilled.")
-                    .define("maxMoistureOnTill", true);
-
-            cropsDie = configBuilder.comment("If enabled, crops will die on dry farmland.")
-                            .define("cropsDie", true);
-
-            waterRange = configBuilder.comment("Determines the effective radius of a water block to moisturize nearby farmland. Can be set to 0 to completely stop water sources from moisturizing farmland. 4 is the vanilla Minecraft value.")
-                            .defineInRange("waterRange", 1, 0, 7);
-
-            waterEffectiveness = configBuilder.comment("Determines how moisturized farmland can get from nearby water sources. 0 means zero moisture, 7 means max moisture level.")
-                    .defineInRange("waterEffectiveness", 4, 1, 7);
-
-            growthRate = configBuilder.comment("Determines the chance for a crop to grow. A value of 4 would equal a 1/4 chance for the crop to grow when it is ticked.")
-                            .defineInRange("growthRate", 7, 1, 10);
-
-            moistureGrowthMul = configBuilder.comment("If enabled, crop growth speed will be affected by the level of moisture in the soil. This ranges from no growth in dry farmland to normal growth speed in fully moisturized farmland.")
-                    .define("moistureGrowthMul", true);
-
-            boneMealEfficiency = configBuilder.comment("Determines the chance for bone meal to further grow a crop. A value of 4 would equal a 1/4 chance for using bone meal to work.")
-                            .defineInRange("boneMealEfficiency", 3, 1, 10);
-
-            farmlandDryingRate = configBuilder.comment("Determines how fast farmland dries up with no water source/sprinkler nearby. A value of 0.05 equals a 5% for farmland to lose a bit of moisture when it is randomly ticked.")
-                            .defineInRange("farmlandDryingRate", 0.05, 0.01, 1.0);
-
-            sprinklerActivationTime = configBuilder.comment("Determines how long the sprinkler is active after having been activated (in seconds).")
-                            .defineInRange("sprinklerActivationTime", 15, 0, 30);
-
-            sprinklerRadius = configBuilder.comment("Determines the effective radius of the sprinkler for moisturizing nearby farmland.")
-                            .defineInRange("sprinklerRadius", 2, 1, 7);
-
-            netheriteSprinklerRadius = configBuilder.comment("Determines the effective radius of the netherite sprinkler for moisturizing nearby farmland.")
-                    .defineInRange("netheriteSprinklerRadius", 4, 1, 7);
-
-            mobInteractions = configBuilder.comment("If enabled, the sprinklers will interact with entities in the world in various ways (e.g. hurting water sensitive mobs and extinguishing burning mobs.)")
-                            .define("mobInteractions", true);
-
-            disableTrampling = configBuilder.comment("If enabled, wet farmland can not be trampled into dirt by mobs or players.")
-                            .define("disableTrampling", true);
-
-            freezeFarmland = configBuilder.comment("If enabled, wet farmland will freeze in cold biomes.")
-                            .define("freezeFarmland", true);
-
-            vaporiseMoisture = configBuilder.comment("If enabled, wet farmland will dry out quickly if in direct sunlight and in a biome with a temperature equal or greater than 1.0. ")
-                            .define("vaporiseMoisture", true);
-
-            canSprinkleInUltrawarm = configBuilder.comment("If enabled, sprinklers will function normally in ultra warm dimensions (like the nether). If disabled, the sprinkler will only spew out some sad vapor instead.")
-                            .define("canSprinkleInUltrawarm", false);
+            configBuilder.push( "general" );
+            maxMoistureOnTill = configBuilder.comment( "If enabled, farmland will always start out at max moisture when just tilled." )
+                    .define( "maxMoistureOnTill", true );
+            
+            cropsDie = configBuilder.comment( "If enabled, crops will die on dry farmland." )
+                    .define( "cropsDie", true );
+            
+            waterRange = configBuilder.comment( "Determines the effective radius of a water block to moisturize nearby farmland. Can be set to 0 to completely stop water sources from moisturizing farmland. 4 is the vanilla Minecraft value." )
+                    .defineInRange( "waterRange", 1, 0, 7 );
+            
+            waterEffectiveness = configBuilder.comment( "Determines how moisturized farmland can get from nearby water sources. 0 means zero moisture, 7 means max moisture level." )
+                    .defineInRange( "waterEffectiveness", 4, 1, 7 );
+            
+            growthRate = configBuilder.comment( "Determines the chance for a crop to grow. A value of 4 would equal a 1/4 chance for the crop to grow when it is ticked." )
+                    .defineInRange( "growthRate", 7, 1, 10 );
+            
+            moistureGrowthMul = configBuilder.comment( "If enabled, crop growth speed will be affected by the level of moisture in the soil. This ranges from no growth in dry farmland to normal growth speed in fully moisturized farmland." )
+                    .define( "moistureGrowthMul", true );
+            
+            boneMealEfficiency = configBuilder.comment( "Determines the chance for bone meal to further grow a crop. A value of 4 would equal a 1/4 chance for using bone meal to work." )
+                    .defineInRange( "boneMealEfficiency", 3, 1, 10 );
+            
+            farmlandDryingRate = configBuilder.comment( "Determines how fast farmland dries up with no water source/sprinkler nearby. A value of 0.05 equals a 5% for farmland to lose a bit of moisture when it is randomly ticked." )
+                    .defineInRange( "farmlandDryingRate", 0.05, 0.01, 1.0 );
+            
+            sprinklerActivationTime = configBuilder.comment( "Determines how long the sprinkler is active after having been activated (in seconds)." )
+                    .defineInRange( "sprinklerActivationTime", 15, 0, 30 );
+            
+            sprinklerRadius = configBuilder.comment( "Determines the effective radius of the sprinkler for moisturizing nearby farmland." )
+                    .defineInRange( "sprinklerRadius", 2, 1, 7 );
+            
+            netheriteSprinklerRadius = configBuilder.comment( "Determines the effective radius of the netherite sprinkler for moisturizing nearby farmland." )
+                    .defineInRange( "netheriteSprinklerRadius", 4, 1, 7 );
+            
+            mobInteractions = configBuilder.comment( "If enabled, the sprinklers will interact with entities in the world in various ways (e.g. hurting water sensitive mobs and extinguishing burning mobs.)" )
+                    .define( "mobInteractions", true );
+            
+            disableTrampling = configBuilder.comment( "If enabled, wet farmland can not be trampled into dirt by mobs or players." )
+                    .define( "disableTrampling", true );
+            
+            freezeFarmland = configBuilder.comment( "If enabled, wet farmland will freeze in cold biomes." )
+                    .define( "freezeFarmland", true );
+            
+            vaporiseMoisture = configBuilder.comment( "If enabled, wet farmland will dry out quickly if in direct sunlight and in a biome with a temperature equal or greater than 1.0. " )
+                    .define( "vaporiseMoisture", true );
+            
+            canSprinkleInUltrawarm = configBuilder.comment( "If enabled, sprinklers will function normally in ultra warm dimensions (like the nether). If disabled, the sprinkler will only spew out some sad vapor instead." )
+                    .define( "canSprinkleInUltrawarm", false );
             configBuilder.pop();
-
+            
             // ANIMALS
-            configBuilder.push("animals");
-            feedAnimalBabies = configBuilder.comment("If enabled, baby animals can not be fed to grow faster")
-                            .define("feedAnimalBabies", false);
-            chickenEggCooldown = configBuilder.comment("The amount of time in ticks chickens will be put on cooldown before they can lay an egg again.")
-                            .defineInRange("chickenEggCooldown", 10000, 20, Integer.MAX_VALUE);
-            cowMilkCooldown = configBuilder.comment("The amount of time in ticks cows will be put on cooldown before they can be milked again.")
-                            .defineInRange("cowMilkCooldown", 200, 0, Integer.MAX_VALUE);
-            mooshroomStewCooldown = configBuilder.comment("The amount of time in ticks mooshrooms will be put on cooldown before they can grant mushroom stew again.")
-                            .defineInRange("mooshroomStewCooldown", 200, 0, Integer.MAX_VALUE);
+            configBuilder.push( "animals" );
+            feedAnimalBabies = configBuilder.comment( "If enabled, baby animals can not be fed to grow faster" )
+                    .define( "feedAnimalBabies", false );
+            chickenEggCooldown = configBuilder.comment( "The amount of time in ticks chickens will be put on cooldown before they can lay an egg again." )
+                    .defineInRange( "chickenEggCooldown", 10000, 20, Integer.MAX_VALUE );
+            cowMilkCooldown = configBuilder.comment( "The amount of time in ticks cows will be put on cooldown before they can be milked again." )
+                    .defineInRange( "cowMilkCooldown", 200, 0, Integer.MAX_VALUE );
+            mooshroomStewCooldown = configBuilder.comment( "The amount of time in ticks mooshrooms will be put on cooldown before they can grant mushroom stew again." )
+                    .defineInRange( "mooshroomStewCooldown", 200, 0, Integer.MAX_VALUE );
             configBuilder.pop();
-
-
+            
+            
             // COMPAT
-            configBuilder.push("compat");
-            requirePiping = configBuilder.comment("Whether sprinklers need to be hooked up with fluid pipes to function.")
-                            .define("requirePiping", false);
-
-            sereneSeasonsCompat = configBuilder.comment("If Serene Seasons is installed and this option is enabled, farmland will freeze when it is winter season.")
-                            .define("sereneSeasonsCompat", true);
-
-            sprinklerCoolsPlayer = configBuilder.comment("If Tough As Nails is installed and this option is enabled, players can cool down when standing close to an active sprinkler.")
-                            .define("sprinklerCoolsPlayer", true);
+            configBuilder.push( "compat" );
+            requirePiping = configBuilder.comment( "Whether sprinklers need to be hooked up with fluid pipes to function." )
+                    .define( "requirePiping", false );
+            
+            sereneSeasonsCompat = configBuilder.comment( "If Serene Seasons is installed and this option is enabled, farmland will freeze when it is winter season." )
+                    .define( "sereneSeasonsCompat", true );
+            
+            sprinklerCoolsPlayer = configBuilder.comment( "If Tough As Nails is installed and this option is enabled, players can cool down when standing close to an active sprinkler." )
+                    .define( "sprinklerCoolsPlayer", true );
             configBuilder.pop();
         }
     }

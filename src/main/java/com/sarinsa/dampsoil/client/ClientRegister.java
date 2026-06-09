@@ -10,17 +10,17 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = DampSoil.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = DampSoil.MODID, bus = Mod.EventBusSubscriber.Bus.MOD )
 public class ClientRegister {
-
+    
     @SubscribeEvent
-    public static void onClientSetup(FMLCommonSetupEvent event) {
-
+    public static void onClientSetup( FMLCommonSetupEvent event ) {
+    
     }
-
+    
     @SubscribeEvent
-    public static void registerParticles(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(DSParticles.SPRINKLER_SPLASH.get(), SprinklerSplashParticle.Factory::new);
-        event.registerSpriteSet(DSParticles.WATER_VAPOR.get(), WaterVaporParticle.Factory::new);
+    public static void registerParticles( RegisterParticleProvidersEvent event ) {
+        event.registerSpriteSet( DSParticles.SPRINKLER_SPLASH.get(), SprinklerSplashParticle.Factory::new );
+        event.registerSpriteSet( DSParticles.WATER_VAPOR.get(), WaterVaporParticle.Factory::new );
     }
 }

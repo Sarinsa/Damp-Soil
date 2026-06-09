@@ -1,6 +1,5 @@
 package com.sarinsa.dampsoil.common.mixin;
 
-import com.sarinsa.dampsoil.common.util.mixin.CommonMixinHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -19,7 +18,9 @@ public abstract class StemBlockMixin extends BushBlock {
         super(properties);
     }
 
-    @Inject(at = @At("HEAD"), method = "randomTick", cancellable = true)
-    public void onRandomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
-    }
+    @Inject(
+            at = @At("HEAD"),
+            method = "randomTick"
+    )
+    public void onRandomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) { }
 }

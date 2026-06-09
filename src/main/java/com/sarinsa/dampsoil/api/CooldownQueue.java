@@ -11,23 +11,24 @@ package com.sarinsa.dampsoil.api;
  * <br>
  */
 public enum CooldownQueue {
-
-    FIRST("FirstCooldown"),
-    SECOND("SecondCooldown"),
-    THIRD("ThirdCooldown");
-
-    CooldownQueue(String tagName) {
+    
+    FIRST( "FirstCooldown" ),
+    SECOND( "SecondCooldown" ),
+    THIRD( "ThirdCooldown" );
+    
+    CooldownQueue( String tagName ) {
         this.tagName = tagName;
     }
+    
     final String tagName;
-
+    
     public String getTagName() {
         return tagName;
     }
-
-    public static CooldownQueue getFromName(String tagName) {
-        for (CooldownQueue type : values()) {
-            if (type.getTagName().equals(tagName))
+    
+    public static CooldownQueue getFromName( String tagName ) {
+        for( CooldownQueue type : values() ) {
+            if( type.getTagName().equals( tagName ) )
                 return type;
         }
         return null;

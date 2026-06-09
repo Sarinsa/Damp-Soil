@@ -6,7 +6,6 @@ import com.sarinsa.dampsoil.common.compat.glitchfiend.SprinkledPlayersTracker;
 import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
 import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
-import net.minecraft.client.multiplayer.prediction.BlockStatePredictionHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -19,19 +18,13 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -44,57 +37,57 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public class SprinklerBlockEntity extends BlockEntity {
-
+    
     protected boolean sprinkling = false;
     private Supplier<Integer> radiusSupplier;
-
+    
     protected int timeNextSync = 10;
     protected boolean needSync = false;
-
-    @SuppressWarnings("deprecation")
-    private final FluidTank waterTank = new FluidTank(2000, (fluidStack) -> fluidStack.getFluid().is(FluidTags.WATER)) {
+    
+    @SuppressWarnings( "deprecation" )
+    private final FluidTank waterTank = new FluidTank( 2000, ( fluidStack ) -> fluidStack.getFluid().is( FluidTags.WATER ) ) {
         @Override
         protected void onContentsChanged() {
             super.onContentsChanged();
             needSync = true;
         }
     };
-    private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(() -> waterTank);
-
-
-    public SprinklerBlockEntity(BlockPos pos, BlockState state) {
-        super(DSBlockEntities.SPRINKLER.get(), pos, state);
+    private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of( () -> waterTank );
+    
+    
+    public SprinklerBlockEntity( BlockPos pos, BlockState state ) {
+        super( DSBlockEntities.SPRINKLER.get(), pos, state );
     }
-
+    
     public FluidTank getWaterTank() {
         return waterTank;
     }
-
+    
     public int getRadius() {
         return radiusSupplier.get();
     }
-
+    
     @Override
     public void onLoad() {
-        if (level != null && getBlockState().getBlock() instanceof SprinklerBlock) {
+        if( level != null && getBlockState().getBlock() instanceof SprinklerBlock ) {
             radiusSupplier = ((SprinklerBlock) getBlockState().getBlock()).getRadius();
         }
     }
-
-    public static void tick(Level level, BlockPos pos, BlockState state, SprinklerBlockEntity sprinkler) {
+    
+    public static void tick( Level level, BlockPos pos, BlockState state, SprinklerBlockEntity sprinkler ) {
         // Are we sprinklin'? :^)
-        if (state.getValue(SprinklerBlock.SPRINKLING)) {
+        if( state.getValue( SprinklerBlock.SPRINKLING ) ) {
             final int radius = sprinkler.getRadius();
             boolean requirePiping = DSComGeneralConfig.CONFIG.requirePiping.get();
-
+            
             // Are we configured to need water pipes? If so, check for that and do what needs to be done
-            if (requirePiping) {
+            if( requirePiping ) {
                 FluidTank waterTank = sprinkler.getWaterTank();
-                if (waterTank.getFluid().getFluid().is(FluidTags.WATER) && waterTank.getFluid().getAmount() >= radius) {
-                    waterTank.getFluid().setAmount(waterTank.getFluid().getAmount() - radius);
-
-                    if (--sprinkler.timeNextSync <= 0) {
-                        if (sprinkler.needSync) {
+                if( waterTank.getFluid().getFluid().is( FluidTags.WATER ) && waterTank.getFluid().getAmount() >= radius ) {
+                    waterTank.getFluid().setAmount( waterTank.getFluid().getAmount() - radius );
+                    
+                    if( --sprinkler.timeNextSync <= 0 ) {
+                        if( sprinkler.needSync ) {
                             sprinkler.notifyChanges();
                             sprinkler.needSync = false;
                         }
@@ -108,13 +101,13 @@ public class SprinklerBlockEntity extends BlockEntity {
             RandomSource random = level.getRandom();
             // Make some sad vapor particles if it's too
             // hot in this dimension to sprinkle.
-            if (!DSComGeneralConfig.CONFIG.canSprinkleInUltrawarm.get() && level.dimensionType().ultraWarm()) {
-                vaporParticles(level, pos);
+            if( !DSComGeneralConfig.CONFIG.canSprinkleInUltrawarm.get() && level.dimensionType().ultraWarm() ) {
+                vaporParticles( level, pos );
             }
             else {
                 // Play the sprinkly noise
-                if (random.nextDouble() < 0.15D) {
-                    if (!level.isClientSide) {
+                if( random.nextDouble() < 0.15D ) {
+                    if( !level.isClientSide ) {
                         level.playSound(
                                 null,
                                 pos,
@@ -125,54 +118,54 @@ public class SprinklerBlockEntity extends BlockEntity {
                         );
                     }
                 }
-                if (level.isClientSide) {
+                if( level.isClientSide ) {
                     // Funnie splash particles
-                    splashParticles(radius, level, pos);
+                    splashParticles( radius, level, pos );
                 }
                 final int loopCount = (int) ((radius + 1) / 1.5D);
-
-                for (int i = 0; i < loopCount; ++i) {
+                
+                for( int i = 0; i < loopCount; ++i ) {
                     int yOffset = 1;
-                    if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN) yOffset = 4;
-
-                    BlockPos randomOffsetPos = pos.offset(random.nextInt(1 + 2 * radius) - radius, random.nextInt(3) - yOffset, random.nextInt(1 + 2 * radius) - radius);
-                    BlockState currentState = level.getBlockState(randomOffsetPos);
-                    SprinkleResults.SprinkleResult result = SprinkleResults.get(currentState.getBlock());
-
+                    if( state.getValue( SprinklerBlock.FACING ) == Direction.DOWN ) yOffset = 4;
+                    
+                    BlockPos randomOffsetPos = pos.offset( random.nextInt( 1 + 2 * radius ) - radius, random.nextInt( 3 ) - yOffset, random.nextInt( 1 + 2 * radius ) - radius );
+                    BlockState currentState = level.getBlockState( randomOffsetPos );
+                    SprinkleResults.SprinkleResult result = SprinkleResults.get( currentState.getBlock() );
+                    
                     // Process sprinkled block (moisten farmland and other stuff)
-                    if (result != null) {
-                        BlockState newState = result.getState(level, randomOffsetPos, currentState);
-
-                        if (newState != currentState) {
-                            level.setBlock(randomOffsetPos, result.getState(level, randomOffsetPos, currentState), 2);
+                    if( result != null ) {
+                        BlockState newState = result.getState( level, randomOffsetPos, currentState );
+                        
+                        if( newState != currentState ) {
+                            level.setBlock( randomOffsetPos, result.getState( level, randomOffsetPos, currentState ), 2 );
                         }
                     }
                     // extinguish fires
-                    if (level.getBlockState(randomOffsetPos).is(BlockTags.FIRE)) {
-                        level.removeBlock(randomOffsetPos, false);
+                    if( level.getBlockState( randomOffsetPos ).is( BlockTags.FIRE ) ) {
+                        level.removeBlock( randomOffsetPos, false );
                     }
                 }
-                AABB range = new AABB(pos.offset(-radius, -1, -radius), pos.offset(radius, 2, radius));
-
+                AABB range = new AABB( pos.offset( -radius, -1, -radius ), pos.offset( radius, 2, radius ) );
+                
                 // Tough As Nails compat: cool down players
-                if (DSComGeneralConfig.CONFIG.sprinklerCoolsPlayer.get()) {
-                    for (Player player : level.getEntitiesOfClass(Player.class, range, player -> !player.isCreative() && !player.isSpectator())) {
-                        SprinkledPlayersTracker.coolPlayer(player);
+                if( DSComGeneralConfig.CONFIG.sprinklerCoolsPlayer.get() ) {
+                    for( Player player : level.getEntitiesOfClass( Player.class, range, player -> !player.isCreative() && !player.isSpectator() ) ) {
+                        SprinkledPlayersTracker.coolPlayer( player );
                     }
                 }
-
+                
                 // entity interactions
-                if (DSComGeneralConfig.CONFIG.mobInteractions.get()) {
-                    if (state.getValue(SprinklerBlock.FACING) == Direction.DOWN)
-                        range = range.move(0, -3, 0);
-
-                    for (Entity entity : level.getEntitiesOfClass(Entity.class, range, entity -> true)) {
+                if( DSComGeneralConfig.CONFIG.mobInteractions.get() ) {
+                    if( state.getValue( SprinklerBlock.FACING ) == Direction.DOWN )
+                        range = range.move( 0, -3, 0 );
+                    
+                    for( Entity entity : level.getEntitiesOfClass( Entity.class, range, entity -> true ) ) {
                         // hurt mobs sensitive to water
-                        if (entity instanceof LivingEntity && (((LivingEntity) entity).isSensitiveToWater() || entity instanceof Bee)) {
-                            entity.hurt(entity.damageSources().drown(), 1.0F);
+                        if( entity instanceof LivingEntity && (((LivingEntity) entity).isSensitiveToWater() || entity instanceof Bee) ) {
+                            entity.hurt( entity.damageSources().drown(), 1.0F );
                         }
                         // extinguish entities
-                        if (entity.getRemainingFireTicks() > 0) {
+                        if( entity.getRemainingFireTicks() > 0 ) {
                             entity.clearFire();
                         }
                     }
@@ -180,131 +173,131 @@ public class SprinklerBlockEntity extends BlockEntity {
             }
         }
     }
-
+    
     @Override
-    public void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
-
-        waterTank.writeToNBT(compoundTag);
-        compoundTag.putBoolean("Sprinkling", sprinkling);
+    public void saveAdditional( CompoundTag compoundTag ) {
+        super.saveAdditional( compoundTag );
+        
+        waterTank.writeToNBT( compoundTag );
+        compoundTag.putBoolean( "Sprinkling", sprinkling );
     }
-
+    
     @Override
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
-        readSyncData(compoundTag);
+    public void load( CompoundTag compoundTag ) {
+        super.load( compoundTag );
+        readSyncData( compoundTag );
     }
-
-    private void readSyncData(CompoundTag syncTag) {
-        waterTank.readFromNBT(syncTag);
-
-        if (syncTag.contains("Sprinkling", Tag.TAG_BYTE)) {
-            sprinkling = syncTag.getBoolean("Sprinkling");
+    
+    private void readSyncData( CompoundTag syncTag ) {
+        waterTank.readFromNBT( syncTag );
+        
+        if( syncTag.contains( "Sprinkling", Tag.TAG_BYTE ) ) {
+            sprinkling = syncTag.getBoolean( "Sprinkling" );
         }
     }
-
+    
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag updateTag = new CompoundTag();
-        saveAdditional(updateTag);
+        saveAdditional( updateTag );
         return updateTag;
     }
-
+    
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
+        return ClientboundBlockEntityDataPacket.create( this );
     }
-
+    
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        readSyncData(tag);
+    public void handleUpdateTag( CompoundTag tag ) {
+        readSyncData( tag );
     }
-
+    
     /**
      * Sends the sprinkler update packet to clients
      */
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings( "ConstantConditions" )
     protected void notifyChanges() {
-        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 2);
+        level.sendBlockUpdated( getBlockPos(), getBlockState(), getBlockState(), 2 );
     }
-
+    
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
-        LazyOptional<T> result = ForgeCapabilities.FLUID_HANDLER.orEmpty(capability, fluidHandler);
-
-        if (result.isPresent()) {
-            Direction sprinklerDir = getBlockState().getValue(SprinklerBlock.FACING);
-
-            if (facing == null)
+    public <T> LazyOptional<T> getCapability( @Nonnull Capability<T> capability, @Nullable Direction facing ) {
+        LazyOptional<T> result = ForgeCapabilities.FLUID_HANDLER.orEmpty( capability, fluidHandler );
+        
+        if( result.isPresent() ) {
+            Direction sprinklerDir = getBlockState().getValue( SprinklerBlock.FACING );
+            
+            if( facing == null )
                 return result;
-
+            
             return facing != sprinklerDir ? result : LazyOptional.empty();
         }
         else {
-            return super.getCapability(capability, facing);
+            return super.getCapability( capability, facing );
         }
     }
-
-    protected static void splashParticles(int radius, Level level, BlockPos pos) {
+    
+    protected static void splashParticles( int radius, Level level, BlockPos pos ) {
         // Make sure wherever the sprinkler is, is still loaded.
         // Weird things can happen if the player is suddenly moved far away for any reason
         // and things are unloaded before we are done spawning splash particles
-        if (level.isLoaded(pos)) {
+        if( level.isLoaded( pos ) ) {
             double speedMul = 30.0D * radius / 2.0D;
             RandomSource random = level.random;
             int count = 6 * (radius / 2);
-
-            for (int i = 0; i < count; ++i) {
+            
+            for( int i = 0; i < count; ++i ) {
                 double xSpeed = (double) random.nextFloat() - 0.5D;
                 double zSpeed = (double) random.nextFloat() - 0.5D;
                 double ySpeed = -1.0D;
-
-                if (level.getBlockState(pos).getValue(SprinklerBlock.FACING) == Direction.UP)
+                
+                if( level.getBlockState( pos ).getValue( SprinklerBlock.FACING ) == Direction.UP )
                     ySpeed = 1.0D;
-
+                
                 double yOffset = ySpeed < 0.0D ? -0.001D : 1.0D;
-
-                level.addParticle(DSParticles.SPRINKLER_SPLASH.get(),
+                
+                level.addParticle( DSParticles.SPRINKLER_SPLASH.get(),
                         (double) pos.getX() + 0.5D,
                         (double) pos.getY() + yOffset,
                         (double) pos.getZ() + 0.5D,
                         xSpeed * speedMul,
                         ySpeed * 60.0D,
-                        zSpeed * speedMul);
+                        zSpeed * speedMul );
             }
         }
     }
-
-    protected static void vaporParticles(Level level, BlockPos pos) {
+    
+    protected static void vaporParticles( Level level, BlockPos pos ) {
         RandomSource random = level.random;
         double ySpeed = -0.02D;
-
-        if (level.getBlockState(pos).getValue(SprinklerBlock.FACING) == Direction.UP)
+        
+        if( level.getBlockState( pos ).getValue( SprinklerBlock.FACING ) == Direction.UP )
             ySpeed = 0.15D;
-
+        
         double yOffset = ySpeed < 0.0D ? -0.001D : 1.0D;
-
-        if (random.nextInt(10) == 0) {
-            double xSpeed = (double)random.nextFloat() - 0.5D;
-            double zSpeed = (double)random.nextFloat() - 0.5D;
-
-            level.addParticle(DSParticles.SPRINKLER_SPLASH.get(),
+        
+        if( random.nextInt( 10 ) == 0 ) {
+            double xSpeed = (double) random.nextFloat() - 0.5D;
+            double zSpeed = (double) random.nextFloat() - 0.5D;
+            
+            level.addParticle( DSParticles.SPRINKLER_SPLASH.get(),
                     (double) pos.getX() + 0.5D,
                     (double) pos.getY() + yOffset,
-                    (double)pos.getZ() + 0.5D,
+                    (double) pos.getZ() + 0.5D,
                     xSpeed * 5.0D,
                     ySpeed * 60.0D,
-                    zSpeed * 5.0D);
+                    zSpeed * 5.0D );
         }
         else {
-            level.addParticle(DSParticles.WATER_VAPOR.get(),
+            level.addParticle( DSParticles.WATER_VAPOR.get(),
                     (double) pos.getX() + 0.5D + (random.nextGaussian() / 10),
                     (double) pos.getY() + yOffset,
                     (double) pos.getZ() + 0.5D + (random.nextGaussian() / 10),
                     0.0D,
                     ySpeed,
-                    0.0D);
+                    0.0D );
         }
     }
 }

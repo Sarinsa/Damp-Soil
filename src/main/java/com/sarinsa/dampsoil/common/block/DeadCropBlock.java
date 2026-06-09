@@ -13,19 +13,19 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DeadCropBlock extends DeadBushBlock {
-
+    
     private static final List<Block> validGround = Arrays.asList(
             Blocks.DIRT,
             Blocks.COARSE_DIRT,
             Blocks.FARMLAND,
             Blocks.PODZOL
     );
-
+    
     public DeadCropBlock() {
-        super(BlockBehaviour.Properties.copy(Blocks.DEAD_BUSH));
+        super( BlockBehaviour.Properties.copy( Blocks.DEAD_BUSH ) );
     }
-
-    protected boolean mayPlaceOn(BlockState state, BlockGetter world, BlockPos pos) {
-        return validGround.contains(state.getBlock());
+    
+    protected boolean mayPlaceOn( BlockState state, BlockGetter world, BlockPos pos ) {
+        return validGround.contains( state.getBlock() );
     }
 }

@@ -16,23 +16,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@SuppressWarnings("JavadocReference")
+@SuppressWarnings( "JavadocReference" )
 public class CommonMixinHooks {
-
-
+    
+    
     /**
      * Called from {@link com.sarinsa.dampsoil.common.mixin.FarmlandBlockMixin#redirectIsWaterNearby(BlockPos, BlockPos, LevelReader, BlockPos)}<br>
      * <br>
+     *
      * @return an Iterable containing the BlockPos bounds to check for water around farmland.
      */
-    public static Iterable<BlockPos> getFarmlandCheckBounds(BlockPos origin) {
+    public static Iterable<BlockPos> getFarmlandCheckBounds( BlockPos origin ) {
         final int waterRange = DSComGeneralConfig.CONFIG.waterRange.get();
-
-        if (waterRange < 1) return List.of(origin);
-
-        return BlockPos.betweenClosed(origin.offset(-waterRange, 0, -waterRange), origin.offset(waterRange, 1, waterRange));
+        
+        if( waterRange < 1 ) return List.of( origin );
+        
+        return BlockPos.betweenClosed( origin.offset( -waterRange, 0, -waterRange ), origin.offset( waterRange, 1, waterRange ) );
     }
-
+    
     /**
      * Called from {@link com.sarinsa.dampsoil.common.mixin.FarmlandBlockMixin#onRandomTick(BlockState, ServerLevel, BlockPos, RandomSource, CallbackInfo)}<br>
      * <br>
@@ -45,33 +46,33 @@ public class CommonMixinHooks {
      * ALSO also, if we are in a biome with a temperature greater than 1.0, and the block is in direct sunlight,
      * evaporate moisture at normal tick speed.
      */
-    public static void onFarmlandRandomTick(BlockState state, RandomSource random, BlockPos pos, ServerLevel level, CallbackInfo ci) {
-        int moisture = state.getValue(FarmBlock.MOISTURE);
-
-        if (DSComGeneralConfig.CONFIG.freezeFarmland.get()) {
-            if (BlockHelper.shouldFreezeFarmlandAt(level, pos)) {
-                level.setBlock(pos, DSBlocks.FROZEN_FARMLAND.get().defaultBlockState().setValue(FrozenFarmBlock.MOISTURE, moisture), 2);
+    public static void onFarmlandRandomTick( BlockState state, RandomSource random, BlockPos pos, ServerLevel level, CallbackInfo ci ) {
+        int moisture = state.getValue( FarmBlock.MOISTURE );
+        
+        if( DSComGeneralConfig.CONFIG.freezeFarmland.get() ) {
+            if( BlockHelper.shouldFreezeFarmlandAt( level, pos ) ) {
+                level.setBlock( pos, DSBlocks.FROZEN_FARMLAND.get().defaultBlockState().setValue( FrozenFarmBlock.MOISTURE, moisture ), 2 );
                 ci.cancel();
                 return;
             }
         }
-        checkAndVaporize(state, random, pos, level, moisture);
-
-        if (moisture > 0 && random.nextDouble() > DSComGeneralConfig.CONFIG.farmlandDryingRate.get())
+        checkAndVaporize( state, random, pos, level, moisture );
+        
+        if( moisture > 0 && random.nextDouble() > DSComGeneralConfig.CONFIG.farmlandDryingRate.get() )
             ci.cancel();
     }
-
-    @SuppressWarnings("unused")
-    public static void onFarmlandTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
-        checkAndVaporize(state, random, pos, level, state.getValue(FarmBlock.MOISTURE));
+    
+    @SuppressWarnings( "unused" )
+    public static void onFarmlandTick( BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci ) {
+        checkAndVaporize( state, random, pos, level, state.getValue( FarmBlock.MOISTURE ) );
     }
-
-    private static void checkAndVaporize(BlockState state, RandomSource random, BlockPos pos, ServerLevel level, int moisture) {
-        if (DSComGeneralConfig.CONFIG.vaporiseMoisture.get()) {
-            if (BlockHelper.shouldEvaporateAt(level, pos)) {
-                level.setBlock(pos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, --moisture), 2);
-
-                for (int i = 0; i < 5; i++) {
+    
+    private static void checkAndVaporize( BlockState state, RandomSource random, BlockPos pos, ServerLevel level, int moisture ) {
+        if( DSComGeneralConfig.CONFIG.vaporiseMoisture.get() ) {
+            if( BlockHelper.shouldEvaporateAt( level, pos ) ) {
+                level.setBlock( pos, Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, --moisture ), 2 );
+                
+                for( int i = 0; i < 5; i++ ) {
                     level.sendParticles(
                             DSParticles.WATER_VAPOR.get(),
                             pos.getX() + random.nextDouble(),
@@ -85,7 +86,7 @@ public class CommonMixinHooks {
                     );
                 }
                 // Speed things up a bit
-                level.scheduleTick(pos, state.getBlock(), 30);
+                level.scheduleTick( pos, state.getBlock(), 30 );
             }
         }
     }
