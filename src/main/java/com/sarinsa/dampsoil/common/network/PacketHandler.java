@@ -26,7 +26,7 @@ public class PacketHandler {
     
     private static SimpleChannel createChannel() {
         return NetworkRegistry.ChannelBuilder
-                .named( DampSoil.resLoc( "channel" ) )
+                .named( DampSoil.rl( "channel" ) )
                 .serverAcceptedVersions( PROTOCOL_NAME::equals )
                 .clientAcceptedVersions( PROTOCOL_NAME::equals )
                 .networkProtocolVersion( () -> PROTOCOL_NAME )

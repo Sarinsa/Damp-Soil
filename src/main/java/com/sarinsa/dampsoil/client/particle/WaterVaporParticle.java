@@ -6,11 +6,8 @@ import net.minecraft.core.particles.SimpleParticleType;
 
 public class WaterVaporParticle extends TextureSheetParticle {
     
-    private SpriteSet spriteSet;
-    
     public WaterVaporParticle( ClientLevel clientLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, SpriteSet sprites ) {
         super( clientLevel, x, y, z, xSpeed, ySpeed, zSpeed );
-        spriteSet = sprites;
         friction = 0.96F;
         xd = 0.0F;
         yd = Math.max( yd * (double) 0.01F + ySpeed, 0.01F );
@@ -33,8 +30,7 @@ public class WaterVaporParticle extends TextureSheetParticle {
         super.tick();
     }
     
-    public record Factory(
-            SpriteSet spriteSet) implements ParticleProvider<SimpleParticleType> {
+    public record Factory(SpriteSet spriteSet) implements ParticleProvider<SimpleParticleType> {
         
         public Particle createParticle( SimpleParticleType particleType, ClientLevel world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed ) {
             return new WaterVaporParticle( world, x, y, z, xSpeed, ySpeed, zSpeed, spriteSet );

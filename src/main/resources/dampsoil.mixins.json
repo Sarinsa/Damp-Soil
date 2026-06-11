@@ -7,7 +7,7 @@
   "mixins": [
     "ChickenMixin",
     "CropsBlockMixin",
-    "FarmlandBlockMixin",
+    "FarmBlockMixin",
     "StemBlockMixin"
   ],
   "server": [],

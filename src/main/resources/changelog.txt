@@ -1,3 +1,6 @@
+1.20.1-5.3.11
+    - Now requires Crust
+    - Configs have now been rewritten to make use of Crust's config API
 1.20.1-4.2.10
     - Fixed client-side crash that would occur if the player is quickly moved far away from an active sprinkler so it becomes unloaded
 1.20.1-4.2.9

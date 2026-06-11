@@ -12,7 +12,7 @@ public final class DSEntityTags {
     
     
     private static TagKey<EntityType<?>> modTag( String name ) {
-        return TagKey.create( Registries.ENTITY_TYPE, DampSoil.resLoc( name ) );
+        return TagKey.create( Registries.ENTITY_TYPE, DampSoil.rl( name ) );
     }
     
     private static TagKey<EntityType<?>> forgeTag( String name ) {

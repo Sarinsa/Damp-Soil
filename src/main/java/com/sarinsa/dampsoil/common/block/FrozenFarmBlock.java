@@ -24,8 +24,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class FrozenFarmBlock extends Block {
     
     public static final IntegerProperty MOISTURE = BlockStateProperties.MOISTURE;
-    protected static final VoxelShape SHAPE = Block.box( 0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D );
-    public static final int MAX_MOISTURE = 7;
+    
+    private static final VoxelShape SHAPE = Block.box( 0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D );
     
     
     public FrozenFarmBlock() {
@@ -50,18 +50,17 @@ public class FrozenFarmBlock extends Block {
     }
     
     @Override
+    public boolean isPathfindable( BlockState state, BlockGetter world, BlockPos pos, PathComputationType computationType ) {
+        return false;
+    }
+    
+    @Override
     public VoxelShape getShape( BlockState state, BlockGetter world, BlockPos pos, CollisionContext context ) {
         return SHAPE;
     }
     
-    
     @Override
     protected void createBlockStateDefinition( StateDefinition.Builder<Block, BlockState> stateBuilder ) {
         stateBuilder.add( MOISTURE );
-    }
-    
-    @Override
-    public boolean isPathfindable( BlockState state, BlockGetter world, BlockPos pos, PathComputationType computationType ) {
-        return false;
     }
 }

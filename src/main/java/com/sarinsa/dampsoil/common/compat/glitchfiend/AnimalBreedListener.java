@@ -1,9 +1,8 @@
 package com.sarinsa.dampsoil.common.compat.glitchfiend;
 
-import com.sarinsa.dampsoil.common.core.config.DSComBreedingConfig;
+import com.sarinsa.dampsoil.common.core.config.Config;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
@@ -13,17 +12,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import sereneseasons.api.season.Season;
 import sereneseasons.api.season.SeasonHelper;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+@SuppressWarnings( "UnstableApiUsage" )
 public class AnimalBreedListener {
-    
-    /**
-     * A Map containing what seasons animals can breed in. Updated on config reload from {@link com.sarinsa.dampsoil.common.core.config.ConfigReloadListener}
-     */
-    public static Map<EntityType<?>, List<Season.SubSeason>> BREEDING_SEASONS = new HashMap<>();
-    
     
     /**
      * Prevent animals from breeding if it is not the right
@@ -31,16 +21,26 @@ public class AnimalBreedListener {
      */
     @SubscribeEvent( priority = EventPriority.HIGH )
     public void onPlayerEntityInteract( PlayerInteractEvent.EntityInteract event ) {
-        if( !DSComBreedingConfig.CONFIG.enableBreedingSeasons.get() )
+        if( !Config.COMPAT.SERENE_SEASONS.seasonalBreeding.get() )
             return;
         
-        if( event.getTarget() instanceof Animal animal ) {
-            if( animal.isFood( event.getItemStack() ) && BREEDING_SEASONS.containsKey( animal.getType() ) ) {
-                List<Season.SubSeason> seasons = BREEDING_SEASONS.get( animal.getType() );
+        if( event.getTarget() instanceof Animal animal && animal.isFood( event.getItemStack() ) ) {
+            final SeasonRepresentable[] seasons = Config.COMPAT.SERENE_SEASONS.breedingSeasonsList.get( animal );
+            
+            if( seasons != null ) {
                 Level level = event.getLevel();
+                Season.SubSeason subSeason = SeasonHelper.getSeasonState( level ).getSubSeason();
+                boolean isBreedingSeason = false;
                 
-                if( !seasons.contains( SeasonHelper.getSeasonState( level ).getSubSeason() ) ) {
-                    spawnSmokeParticles( level, animal );
+                for( SeasonRepresentable season : seasons ) {
+                    if( season.getName().equals( subSeason.name() ) ) {
+                        isBreedingSeason = true;
+                        break;
+                    }
+                }
+                
+                if( !isBreedingSeason ) {
+                    spawnSmokeParticles( level, animal, 7 );
                     event.setCanceled( true );
                     event.setCancellationResult( InteractionResult.PASS );
                 }
@@ -48,12 +48,21 @@ public class AnimalBreedListener {
         }
     }
     
-    protected void spawnSmokeParticles( Level level, LivingEntity entity ) {
-        for( int i = 0; i < 7; ++i ) {
-            double xVel = level.random.nextGaussian() * 0.02D;
-            double yVel = level.random.nextGaussian() * 0.02D;
-            double zVel = level.random.nextGaussian() * 0.02D;
-            level.addParticle( ParticleTypes.SMOKE, entity.getRandomX( 1.0D ), entity.getRandomY() + 0.5D, entity.getRandomZ( 1.0D ), xVel, yVel, zVel );
+    /** Helper method for spawning smoke particles around an entity. */
+    @SuppressWarnings( "SameParameterValue" )
+    protected void spawnSmokeParticles( Level level, LivingEntity entity, int particleCount ) {
+        for( int i = 0; i < particleCount; ++i ) {
+            double dx = level.random.nextGaussian() * 0.02D;
+            double dy = level.random.nextGaussian() * 0.02D;
+            double dz = level.random.nextGaussian() * 0.02D;
+            
+            level.addParticle(
+                    ParticleTypes.SMOKE,
+                    entity.getRandomX( 1.0D ),
+                    entity.getRandomY() + 0.5D,
+                    entity.getRandomZ( 1.0D ),
+                    dx, dy, dz
+            );
         }
     }
 }

@@ -12,9 +12,8 @@ import sereneseasons.season.SeasonHooks;
 public class BlockHelper {
     
     /**
-     * @return True if the given BlockPos is at a place
-     * where wet farmland should dry out quickly in direct
-     * sunlight.
+     * @return True if the given block position is at a place
+     * where wet farmland should dry out quickly when exposed to direct sunlight.
      */
     public static boolean shouldEvaporateAt( Level level, BlockPos pos ) {
         if( level.getBlockState( pos ).is( Blocks.FARMLAND ) && !FarmBlock.isNearWater( level, pos ) ) {
@@ -31,8 +30,8 @@ public class BlockHelper {
     }
     
     /**
-     * @return True if the given BlockPos is at a place where wet farmland should
-     * freeze.
+     * @return True if the given block position is at a place
+     * where wet farmland should freeze.
      */
     public static boolean shouldFreezeFarmlandAt( Level level, BlockPos pos ) {
         if( level.getBlockState( pos ).is( Blocks.FARMLAND ) ) {

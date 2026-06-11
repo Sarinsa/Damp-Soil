@@ -2,7 +2,7 @@ package com.sarinsa.dampsoil.common.event;
 
 import com.sarinsa.dampsoil.api.CooldownQueue;
 import com.sarinsa.dampsoil.api.impl.DampSoilApi;
-import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
+import com.sarinsa.dampsoil.common.core.config.Config;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
@@ -30,8 +30,6 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import static com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig.CONFIG;
-
 public class DSEventListener {
     
     /**
@@ -39,22 +37,20 @@ public class DSEventListener {
      */
     @SubscribeEvent
     public void onCropBonemealed( BonemealEvent event ) {
-        Block block = event.getBlock().getBlock();
-        RandomSource random = event.getLevel().random;
+        final Block block = event.getBlock().getBlock();
+        final RandomSource random = event.getLevel().random;
         
         if( block instanceof CropBlock ) {
-            final int chance = CONFIG.boneMealEfficiency.get();
-            
-            if( chance <= 0 || random.nextDouble() > 1.0 / ((float) chance) ) {
-                event.setResult( Event.Result.ALLOW );
+            if( !Config.CROPS.GENERAL.boneMealChance.rollChance( random ) ) {
+                event.setResult( Event.Result.DENY );
             }
         }
     }
     
     @SubscribeEvent( priority = EventPriority.HIGHEST )
     public void onCropGrow( BlockEvent.CropGrowEvent.Pre event ) {
-        LevelAccessor level = event.getLevel();
-        BlockPos pos = event.getPos();
+        final LevelAccessor level = event.getLevel();
+        final BlockPos pos = event.getPos();
         
         if( !level.getBlockState( pos ).is( BlockTags.CROPS ) )
             return;
@@ -63,17 +59,20 @@ public class DSEventListener {
             int moisture = level.getBlockState( pos.below() ).getValue( FarmBlock.MOISTURE );
             
             // Kill off crops on dry soil
-            if( DSComGeneralConfig.CONFIG.cropsDie.get() ) {
-                if( moisture < 1 ) {
-                    level.setBlock( pos, DSBlocks.DEAD_CROP.get().defaultBlockState(), 2 );
-                    level.playSound( null, pos, SoundEvents.COMPOSTER_READY, SoundSource.BLOCKS, 0.65F, 0.5F );
-                }
+            if( moisture < 1 && Config.CROPS.GENERAL.killDryCrops.get() ) {
+                level.setBlock( pos, DSBlocks.DEAD_CROP.get().defaultBlockState(), Block.UPDATE_CLIENTS );
+                level.playSound( null, pos, SoundEvents.COMPOSTER_READY, SoundSource.BLOCKS, 0.65F, 0.5F );
             }
             // Maybe cancel crop growth
-            double growthRate = 1.0D / DSComGeneralConfig.CONFIG.growthRate.get();
-            double moistureGrowthMul = (1.0D / 7.0D) * moisture;
+            double growthChance = Config.CROPS.GENERAL.growthChance.get();
+            boolean useMoistureMult = Config.CROPS.GENERAL.useMoistureMult.get();
             
-            if( level.getRandom().nextDouble() > (moistureGrowthMul * growthRate) ) {
+            // Maybe reduce chance based on moisture level
+            if( useMoistureMult ) {
+                growthChance = ((1.0 / FarmBlock.MAX_MOISTURE) * moisture) * growthChance;
+            }
+            
+            if( level.getRandom().nextDouble() > growthChance ) {
                 event.setResult( Event.Result.DENY );
             }
         }
@@ -85,8 +84,8 @@ public class DSEventListener {
      */
     @SubscribeEvent
     public void onFarmlandTrample( BlockEvent.FarmlandTrampleEvent event ) {
-        if( CONFIG.disableTrampling.get() ) {
-            BlockState state = event.getLevel().getBlockState( event.getPos() );
+        if( Config.IRRIGATION.FARMLAND.denyTrampling.get() ) {
+            final BlockState state = event.getLevel().getBlockState( event.getPos() );
             
             // Ensure we are not encountering some modded farmland with
             // different block state properties.
@@ -98,13 +97,14 @@ public class DSEventListener {
     }
     
     /**
-     * Make tilled farmland start out at max moisture level.
+     * Called when a block is changed by a tool (like tilling or log stripping).
      */
     @SubscribeEvent
     public void onBlockToolModification( BlockEvent.BlockToolModificationEvent event ) {
-        if( CONFIG.maxMoistureOnTill.get() && !event.isSimulated() ) {
+        // Check if max-moisture tilling is enabled
+        if( Config.IRRIGATION.FARMLAND.maxMoistureOnTill.get() && !event.isSimulated() ) {
             if( event.getToolAction() == ToolActions.HOE_TILL ) {
-                BlockState finalState = event.getFinalState();
+                final BlockState finalState = event.getFinalState();
                 
                 if( finalState.is( Blocks.DIRT ) || finalState.is( Blocks.GRASS_BLOCK ) ) {
                     event.setFinalState( Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE ) );
@@ -113,12 +113,14 @@ public class DSEventListener {
         }
     }
     
+    /** Called when a player right-clicks an entity. */
     @SubscribeEvent( priority = EventPriority.HIGH )
     public void onPlayerEntityInteract( PlayerInteractEvent.EntityInteract event ) {
-        ItemStack usedItem = event.getItemStack();
+        final ItemStack usedItem = event.getItemStack();
         
+        // Check if baby feeding is disabled
         if( event.getTarget() instanceof Animal animal && animal.isFood( event.getItemStack() ) ) {
-            if( animal.isBaby() && !CONFIG.feedAnimalBabies.get() ) {
+            if( animal.isBaby() && Config.ANIMALS.GENERAL.denyBabyFeeding.get() ) {
                 cancelInteract( event, animal );
             }
         }
@@ -128,7 +130,7 @@ public class DSEventListener {
                 cancelInteract( event, cow );
             }
             else {
-                DampSoilApi.INSTANCE.getProduceCooldownManager().setRecentlyProduced( cow, CooldownQueue.FIRST, CONFIG.cowMilkCooldown.get() );
+                DampSoilApi.INSTANCE.getProduceCooldownManager().setRecentlyProduced( cow, CooldownQueue.FIRST, Config.ANIMALS.PRODUCE.cowMilkCooldown );
             }
         }
         
@@ -137,11 +139,12 @@ public class DSEventListener {
                 cancelInteract( event, mushroomCow );
             }
             else {
-                DampSoilApi.INSTANCE.getProduceCooldownManager().setRecentlyProduced( mushroomCow, CooldownQueue.SECOND, CONFIG.mooshroomStewCooldown.get() );
+                DampSoilApi.INSTANCE.getProduceCooldownManager().setRecentlyProduced( mushroomCow, CooldownQueue.SECOND, Config.ANIMALS.PRODUCE.mooshroomStewCooldown );
             }
         }
     }
     
+    /** Helper method for canceling player interact events. */
     private void cancelInteract( PlayerInteractEvent event, Mob entity ) {
         entity.playAmbientSound();
         event.setCanceled( true );

@@ -2,6 +2,11 @@ package com.sarinsa.dampsoil.common.compat.glitchfiend;
 
 import javax.annotation.Nullable;
 
+/**
+ * Used to represent Serene Seasons sub-seasons
+ * without referencing any classes or code
+ * from the mod.
+ */
 public enum SeasonRepresentable {
     EARLY_SPRING( "EARLY_SPRING" ),
     MID_SPRING( "MID_SPRING" ),
@@ -22,11 +27,15 @@ public enum SeasonRepresentable {
     
     private final String name;
     
-    
+    /** @return The season name of this enum constant. */
     public String getName() {
         return name;
     }
     
+    /**
+     * @return The {@code SeasonRepresentable} with the specified name, if any.
+     * Returns null if no match exists.
+     */
     @Nullable
     public static SeasonRepresentable getFromName( String name ) {
         for( SeasonRepresentable representable : values() ) {

@@ -1,6 +1,6 @@
 package com.sarinsa.dampsoil.common.mixin;
 
-import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
+import com.sarinsa.dampsoil.common.core.config.Config;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
@@ -12,12 +12,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-// TODO - handle this via event instead; a mixin is not necessary
 @Mixin( Chicken.class )
 public abstract class ChickenMixin extends Animal {
     
     @Shadow
-    public int eggTime = DSComGeneralConfig.CONFIG.chickenEggCooldown.get();
+    public int eggTime = Config.ANIMALS.PRODUCE.chickenEggCooldown.getMin();
     
     protected ChickenMixin( EntityType<? extends Animal> type, Level level ) {
         super( type, level );
@@ -25,12 +24,22 @@ public abstract class ChickenMixin extends Animal {
     
     @Inject(
             method = "aiStep",
-            slice = @Slice( from = @At( value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Chicken;spawnAtLocation(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/entity/item/ItemEntity;" ) ),
-            at = @At( value = "INVOKE", target = "Lnet/minecraft/util/RandomSource;nextInt(I)I", ordinal = 0, shift = At.Shift.AFTER ),
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/world/entity/animal/Chicken;spawnAtLocation(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/entity/item/ItemEntity;"
+                    )
+            ),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/util/RandomSource;nextInt(I)I",
+                    ordinal = 0,
+                    shift = At.Shift.AFTER
+            ),
             cancellable = true
     )
     public void onAiStep( CallbackInfo ci ) {
-        eggTime = DSComGeneralConfig.CONFIG.chickenEggCooldown.get();
+        eggTime = Config.ANIMALS.PRODUCE.chickenEggCooldown.next( random );
         ci.cancel();
     }
 }

@@ -25,7 +25,9 @@ public class DeadCropBlock extends DeadBushBlock {
         super( BlockBehaviour.Properties.copy( Blocks.DEAD_BUSH ) );
     }
     
+    @Override
     protected boolean mayPlaceOn( BlockState state, BlockGetter world, BlockPos pos ) {
+        // TODO - replace this with a tag
         return validGround.contains( state.getBlock() );
     }
 }

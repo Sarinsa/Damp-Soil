@@ -82,6 +82,10 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
+    // Crust; only implement the api, but include the entire mod at runtime
+    implementation "curse.maven:crust-873570:${crust_api_version}"
+    runtimeOnly "curse.maven:crust-873570:${crust_src_version}"
+
     runtimeOnly fg.deobf("curse.maven:jei-238222:${jei_version}")
     runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_version}")
 
@@ -89,6 +93,8 @@ dependencies {
 
     runtimeOnly fg.deobf("curse.maven:toughasnails-246391:${toughasnails_version}")
     compileOnly fg.deobf("curse.maven:toughasnails_api-246391:${toughasnails_api_version}")
+
+    runtimeOnly fg.deobf("curse.maven:glitchcore-955399:${glitchcore_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

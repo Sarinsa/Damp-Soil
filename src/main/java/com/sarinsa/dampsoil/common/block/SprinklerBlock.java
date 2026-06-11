@@ -1,6 +1,6 @@
 package com.sarinsa.dampsoil.common.block;
 
-import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
+import com.sarinsa.dampsoil.common.core.config.Config;
 import com.sarinsa.dampsoil.common.tile.SprinklerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -78,7 +78,7 @@ public class SprinklerBlock extends Block implements EntityBlock {
                 if( !level.getBlockState( pos.below() ).isAir() )
                     obstructed = true;
             }
-            int activationTime = DSComGeneralConfig.CONFIG.sprinklerActivationTime.get();
+            int activationTime = Config.IRRIGATION.SPRINKLERS.activeDuration.get();
             
             // activation
             if( level.hasNeighborSignal( pos ) && !obstructed ) {

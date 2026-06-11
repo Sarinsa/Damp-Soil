@@ -1,9 +1,10 @@
 package com.sarinsa.dampsoil.common.util.mixin;
 
 import com.sarinsa.dampsoil.common.block.FrozenFarmBlock;
-import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
+import com.sarinsa.dampsoil.common.core.config.Config;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
+import com.sarinsa.dampsoil.common.mixin.FarmBlockMixin;
 import com.sarinsa.dampsoil.common.util.BlockHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -21,13 +22,13 @@ public class CommonMixinHooks {
     
     
     /**
-     * Called from {@link com.sarinsa.dampsoil.common.mixin.FarmlandBlockMixin#redirectIsWaterNearby(BlockPos, BlockPos, LevelReader, BlockPos)}<br>
+     * Called from {@link FarmBlockMixin#redirectIsWaterNearby(BlockPos, BlockPos, LevelReader, BlockPos)}<br>
      * <br>
      *
      * @return an Iterable containing the BlockPos bounds to check for water around farmland.
      */
     public static Iterable<BlockPos> getFarmlandCheckBounds( BlockPos origin ) {
-        final int waterRange = DSComGeneralConfig.CONFIG.waterRange.get();
+        final int waterRange = Config.IRRIGATION.FARMLAND.waterRange.get();
         
         if( waterRange < 1 ) return List.of( origin );
         
@@ -35,7 +36,7 @@ public class CommonMixinHooks {
     }
     
     /**
-     * Called from {@link com.sarinsa.dampsoil.common.mixin.FarmlandBlockMixin#onRandomTick(BlockState, ServerLevel, BlockPos, RandomSource, CallbackInfo)}<br>
+     * Called from {@link FarmBlockMixin#onRandomTick(BlockState, ServerLevel, BlockPos, RandomSource, CallbackInfo)}<br>
      * <br>
      * Checks if farmland should cancel its random tick to prevent it from losing
      * moisture. How likely this is to happen depends on the farmlandDryingRate config option.<br>
@@ -49,7 +50,7 @@ public class CommonMixinHooks {
     public static void onFarmlandRandomTick( BlockState state, RandomSource random, BlockPos pos, ServerLevel level, CallbackInfo ci ) {
         int moisture = state.getValue( FarmBlock.MOISTURE );
         
-        if( DSComGeneralConfig.CONFIG.freezeFarmland.get() ) {
+        if( Config.IRRIGATION.FARMLAND.canFreeze.get() ) {
             if( BlockHelper.shouldFreezeFarmlandAt( level, pos ) ) {
                 level.setBlock( pos, DSBlocks.FROZEN_FARMLAND.get().defaultBlockState().setValue( FrozenFarmBlock.MOISTURE, moisture ), 2 );
                 ci.cancel();
@@ -58,7 +59,7 @@ public class CommonMixinHooks {
         }
         checkAndVaporize( state, random, pos, level, moisture );
         
-        if( moisture > 0 && random.nextDouble() > DSComGeneralConfig.CONFIG.farmlandDryingRate.get() )
+        if( moisture > 0 && !Config.IRRIGATION.FARMLAND.dryingChance.rollChance( random ) )
             ci.cancel();
     }
     
@@ -68,7 +69,7 @@ public class CommonMixinHooks {
     }
     
     private static void checkAndVaporize( BlockState state, RandomSource random, BlockPos pos, ServerLevel level, int moisture ) {
-        if( DSComGeneralConfig.CONFIG.vaporiseMoisture.get() ) {
+        if( Config.IRRIGATION.FARMLAND.vaporizeChance.rollChance( random ) ) {
             if( BlockHelper.shouldEvaporateAt( level, pos ) ) {
                 level.setBlock( pos, Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, --moisture ), 2 );
                 

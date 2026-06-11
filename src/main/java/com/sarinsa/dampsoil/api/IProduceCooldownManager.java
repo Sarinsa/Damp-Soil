@@ -1,5 +1,6 @@
 package com.sarinsa.dampsoil.api;
 
+import fathertoast.crust.api.config.common.field.IntField;
 import net.minecraft.world.entity.LivingEntity;
 
 /**
@@ -33,4 +34,15 @@ public interface IProduceCooldownManager {
      * @param cooldown      The amount of cooldown ticks.
      */
     void setRecentlyProduced( LivingEntity entity, CooldownQueue cooldownQueue, int cooldown );
+    
+    /**
+     * Puts the given entity on cooldown in the specified cooldown queue. Does nothing on client.
+     *
+     * @param entity        The animal to put on cooldown.
+     * @param cooldownQueue A {@link CooldownQueue} representing a cooldown timer to add a cooldown to.
+     *                      Which type to use is entirely up to you. You can choose between 3 different cooldown timers.
+     *                      See {@link CooldownQueue} for more information.
+     * @param cooldownField An integer random-range config field to sample a cooldown from.
+     */
+    void setRecentlyProduced( LivingEntity entity, CooldownQueue cooldownQueue, IntField.RandomRange cooldownField );
 }

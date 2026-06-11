@@ -3,6 +3,7 @@ package com.sarinsa.dampsoil.api.impl;
 import com.sarinsa.dampsoil.api.CooldownQueue;
 import com.sarinsa.dampsoil.api.IProduceCooldownManager;
 import com.sarinsa.dampsoil.common.tag.DSEntityTags;
+import fathertoast.crust.api.config.common.field.IntField;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,8 +18,13 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
     
     @SubscribeEvent
     public void tickEntity( LivingEvent.LivingTickEvent event ) {
-        if( !event.getEntity().level().isClientSide && event.getEntity().getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) ) {
-            tickAllCooldowns( event.getEntity() );
+        final LivingEntity entity = event.getEntity();
+        
+        // noinspection resource
+        if( entity.level().isClientSide ) return;
+        
+        if( entity.getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) ) {
+            tickAllCooldowns( entity );
         }
     }
     
@@ -30,10 +36,7 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
     @Override
     @SuppressWarnings( "resource" )
     public boolean canProduce( LivingEntity entity, CooldownQueue cooldownQueue ) {
-        if( entity == null || cooldownQueue == null )
-            return true;
-        if( !entity.getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) )
-            return true;
+        if( !entity.getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) ) return true;
         if( entity.level().isClientSide ) return false;
         
         return getCooldownForQueue( cooldownQueue, entity ) <= 0;
@@ -51,13 +54,15 @@ public class ProduceCooldownManager implements IProduceCooldownManager {
     @Override
     @SuppressWarnings( "resource" )
     public void setRecentlyProduced( LivingEntity entity, CooldownQueue cooldownQueue, int cooldown ) {
-        if( entity == null || cooldownQueue == null )
-            return;
-        if( !entity.getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) )
-            return;
+        if( !entity.getType().is( DSEntityTags.COOLDOWNABLE_MOBS ) ) return;
         if( entity.level().isClientSide ) return;
         
         setCooldownForQueue( cooldownQueue, entity, cooldown );
+    }
+    
+    @Override
+    public void setRecentlyProduced( LivingEntity entity, CooldownQueue cooldownQueue, IntField.RandomRange cooldownField ) {
+        setRecentlyProduced( entity, cooldownQueue, cooldownField.next( entity.getRandom() ) );
     }
     
     private void tickCooldown( CooldownQueue queue, LivingEntity livingEntity ) {

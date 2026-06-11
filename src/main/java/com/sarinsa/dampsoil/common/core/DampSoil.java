@@ -1,12 +1,12 @@
 package com.sarinsa.dampsoil.common.core;
 
+import com.sarinsa.dampsoil.api.SprinkleResults;
 import com.sarinsa.dampsoil.api.impl.DampSoilApi;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.AnimalBreedListener;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.SereneSeasonsHelper;
-import com.sarinsa.dampsoil.common.compat.glitchfiend.SprinkledPlayersTracker;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.TempModifiers;
-import com.sarinsa.dampsoil.common.core.config.DSComBreedingConfig;
-import com.sarinsa.dampsoil.common.core.config.DSComGeneralConfig;
+import com.sarinsa.dampsoil.common.compat.glitchfiend.ToughAsNailsHelper;
+import com.sarinsa.dampsoil.common.core.config.Config;
 import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import com.sarinsa.dampsoil.common.core.registry.DSItems;
@@ -17,9 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -31,8 +30,11 @@ import java.util.function.Supplier;
 @Mod( DampSoil.MODID )
 public class DampSoil {
     
+    /** The mod's ID. */
     public static final String MODID = "dampsoil";
+    /** A logger instance using this mod's ID as identifier. */
     public static final Logger LOGGER = LogManager.getLogger( MODID );
+    
     
     @SuppressWarnings( "FieldCanBeLocal" )
     private final PacketHandler packetHandler = new PacketHandler();
@@ -40,8 +42,17 @@ public class DampSoil {
     private final DampSoilApi api = DampSoilApi.INSTANCE;
     
     
-    public DampSoil() {
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public DampSoil( FMLJavaModLoadingContext context ) {
+        IEventBus modBus = context.getModEventBus();
+        
+        modBus.addListener( DSItems::onCreativeTabPopulate );
+        modBus.addListener( this::onCommonSetup );
+        modBus.addListener( this::onInterModEnqueue );
+        
+        addCompatListener( MinecraftForge.EVENT_BUS, AnimalBreedListener::new, SereneSeasonsHelper.MODID );
+        
+        MinecraftForge.EVENT_BUS.register( new DSEventListener() );
+        MinecraftForge.EVENT_BUS.register( api.getProduceCooldownManager() );
         
         packetHandler.registerMessages();
         
@@ -50,37 +61,30 @@ public class DampSoil {
         DSParticles.PARTICLES.register( modBus );
         DSBlockEntities.TILE_ENTITIES.register( modBus );
         
-        modBus.addListener( DSItems::onCreativeTabPopulate );
-        modBus.addListener( this::onCommonSetup );
-        modBus.addListener( this::onInterModEnqueue );
-        addCompatListener( MinecraftForge.EVENT_BUS, AnimalBreedListener::new, SereneSeasonsHelper.MODID );
-        
-        MinecraftForge.EVENT_BUS.register( new DSEventListener() );
-        MinecraftForge.EVENT_BUS.register( api.getProduceCooldownManager() );
-        
-        ModLoadingContext context = ModLoadingContext.get();
-        context.registerConfig( ModConfig.Type.COMMON, DSComBreedingConfig.CONFIG_SPEC, "dampsoil/breeding_seasons.toml" );
-        context.registerConfig( ModConfig.Type.COMMON, DSComGeneralConfig.CONFIG_SPEC, "dampsoil/main.toml" );
+        // Enqueue config initialization
+        ModLoadingStage.CONSTRUCT.getDeferredWorkQueue().enqueueWork( context.getContainer(), Config::initialize );
     }
     
     public void onCommonSetup( FMLCommonSetupEvent event ) {
-    
+        event.enqueueWork( SprinkleResults::registerDefault );
     }
     
     public void onInterModEnqueue( InterModEnqueueEvent event ) {
         event.enqueueWork( () -> {
-            if( ModList.get().isLoaded( SprinkledPlayersTracker.TAN_MODID ) ) {
+            if( ModList.get().isLoaded( ToughAsNailsHelper.TAN_MODID ) ) {
                 TempModifiers.register();
             }
         } );
     }
     
-    private void addCompatListener( IEventBus bus, Supplier<Object> listener, String modid ) {
-        if( ModList.get().isLoaded( modid ) )
+    @SuppressWarnings( "SameParameterValue" )
+    private void addCompatListener( IEventBus bus, Supplier<Object> listener, String modId ) {
+        if( ModList.get().isLoaded( modId ) )
             bus.register( listener.get() );
     }
     
-    public static ResourceLocation resLoc( String path ) {
-        return new ResourceLocation( MODID, path );
+    /** @return A {@link ResourceLocation} with this mod's namespace and the specified path. */
+    public static ResourceLocation rl( String path ) {
+        return ResourceLocation.fromNamespaceAndPath( MODID, path );
     }
 }

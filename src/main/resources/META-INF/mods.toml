@@ -1,41 +1,50 @@
-modLoader="javafml"
-loaderVersion="[47,)"
-license="MIT license"
-issueTrackerURL="https://github.com/Sarinsa/Damp-Soil/issues"
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "MIT license"
+issueTrackerURL = "https://github.com/Sarinsa/Damp-Soil/issues"
 
 [[mods]]
-modId="dampsoil"
-version="${file.jarVersion}"
-displayName="Damp Soil"
-logoFile="logo.png"
-credits="RandomMcSomethin (original author)"
-authors="Sarinsa"
-description='''
-Introduces some changes to how farmland works, how crops grow and a couple other farming related things. Also comes with sprinklers for all your sprinkly needs!'''
-[[dependencies.dampsoil]]
-    modId="forge"
-    mandatory=true
-    versionRange="[47,)"
-    ordering="NONE"
-    side="BOTH"
+modId = "dampsoil"
+version = "${file.jarVersion}"
+displayName = "Damp Soil"
+logoFile = "logo.png"
+credits = "RandomMcSomethin (original author)"
+authors = "Sarinsa"
+description = '''
+Introduces some changes to how farmland works, how crops grow and a couple other farming related things. Also comes with sprinklers for all your sprinkly needs!
+'''
 
 [[dependencies.dampsoil]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.20.1,)"
-    ordering="NONE"
-    side="BOTH"
+modId = "forge"
+mandatory = true
+versionRange = "[47.4,)"
+ordering = "NONE"
+side = "BOTH"
 
 [[dependencies.dampsoil]]
-    modId="sereneseasons"
-    mandatory=false
-    versionRange="[9.0,)"
-    ordering="BEFORE"
-    side="BOTH"
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,)"
+ordering = "NONE"
+side = "BOTH"
 
 [[dependencies.dampsoil]]
-    modId="toughasnails"
-    mandatory=false
-    versionRange="[9.0,)"
-    ordering="BEFORE"
-    side="BOTH"
+modId = "crust"
+mandatory = true
+versionRange = "[4.17,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.dampsoil]]
+modId = "sereneseasons"
+mandatory = false
+versionRange = "[9.0,)"
+ordering = "BEFORE"
+side = "BOTH"
+
+[[dependencies.dampsoil]]
+modId = "toughasnails"
+mandatory = false
+versionRange = "[9.0,)"
+ordering = "BEFORE"
+side = "BOTH"
