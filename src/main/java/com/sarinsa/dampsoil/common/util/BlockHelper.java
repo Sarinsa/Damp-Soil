@@ -1,6 +1,7 @@
 package com.sarinsa.dampsoil.common.util;
 
 import com.sarinsa.dampsoil.common.compat.glitchfiend.SereneSeasonsHelper;
+import com.sarinsa.dampsoil.common.core.config.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -20,10 +21,7 @@ public class BlockHelper {
             int moisture = level.getBlockState( pos ).getValue( FarmBlock.MOISTURE );
             
             if( moisture > 0 ) {
-                if( level.dimensionType().ultraWarm() )
-                    return true;
-                
-                return level.getBiome( pos ).get().getBaseTemperature() >= 1.0F && level.isDay() && !level.isRaining() && level.canSeeSky( pos );
+                return Config.IRRIGATION.FARMLAND.vaporizeConditions.getOrElse( level, 0.0 ) > 0.0;
             }
         }
         return false;
@@ -34,13 +32,9 @@ public class BlockHelper {
      * where wet farmland should freeze.
      */
     public static boolean shouldFreezeFarmlandAt( Level level, BlockPos pos ) {
-        if( level.getBlockState( pos ).is( Blocks.FARMLAND ) ) {
-            int moisture = level.getBlockState( pos ).getValue( FarmBlock.MOISTURE );
-            
-            return !level.getBiome( pos ).get().warmEnoughToRain( pos )
-                    || (ModList.get().isLoaded( SereneSeasonsHelper.MODID ) && SeasonHooks.coldEnoughToSnowSeasonal( level, level.getBiome( pos ), pos ))
-                    && level.getBrightness( LightLayer.BLOCK, pos ) < 10 && pos.getY() > 30 && moisture > 0;
-        }
-        return false;
+        boolean canSnow = (!level.getBiome( pos ).get().warmEnoughToRain( pos )
+                || (ModList.get().isLoaded( SereneSeasonsHelper.MODID ) && SeasonHooks.coldEnoughToSnowSeasonal( level, level.getBiome( pos ), pos )));
+        
+        return canSnow && level.getBrightness( LightLayer.BLOCK, pos ) < 10;
     }
 }

@@ -1,11 +1,10 @@
 package com.sarinsa.dampsoil.common.block;
 
-import com.sarinsa.dampsoil.common.compat.glitchfiend.SereneSeasonsHelper;
+import com.sarinsa.dampsoil.common.util.BlockHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
@@ -39,8 +38,8 @@ public class FrozenFarmBlock extends Block {
     
     @Override
     public void randomTick( BlockState state, ServerLevel level, BlockPos pos, RandomSource randomSource ) {
-        if( (level.getBrightness( LightLayer.BLOCK, pos ) > 11 - state.getLightBlock( level, pos )) || !SereneSeasonsHelper.isWinter( level ) ) {
-            level.setBlockAndUpdate( pos, Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, state.getValue( MOISTURE ) ) );
+        if( !BlockHelper.shouldFreezeFarmlandAt( level, pos ) ) {
+            level.setBlock( pos, Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, state.getValue( MOISTURE ) ), Block.UPDATE_CLIENTS );
         }
     }
     

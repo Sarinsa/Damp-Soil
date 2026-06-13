@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,11 +49,13 @@ public class CommonMixinHooks {
      * evaporate moisture at normal tick speed.
      */
     public static void onFarmlandRandomTick( BlockState state, RandomSource random, BlockPos pos, ServerLevel level, CallbackInfo ci ) {
+        if( level.isClientSide ) return;
+        
         int moisture = state.getValue( FarmBlock.MOISTURE );
         
         if( Config.IRRIGATION.FARMLAND.canFreeze.get() ) {
-            if( BlockHelper.shouldFreezeFarmlandAt( level, pos ) ) {
-                level.setBlock( pos, DSBlocks.FROZEN_FARMLAND.get().defaultBlockState().setValue( FrozenFarmBlock.MOISTURE, moisture ), 2 );
+            if( BlockHelper.shouldFreezeFarmlandAt( level, pos ) && moisture > 0 ) {
+                level.setBlock( pos, DSBlocks.FROZEN_FARMLAND.get().defaultBlockState().setValue( FrozenFarmBlock.MOISTURE, moisture ), Block.UPDATE_CLIENTS );
                 ci.cancel();
                 return;
             }
@@ -71,19 +74,19 @@ public class CommonMixinHooks {
     private static void checkAndVaporize( BlockState state, RandomSource random, BlockPos pos, ServerLevel level, int moisture ) {
         if( Config.IRRIGATION.FARMLAND.vaporizeChance.rollChance( random ) ) {
             if( BlockHelper.shouldEvaporateAt( level, pos ) ) {
-                level.setBlock( pos, Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, --moisture ), 2 );
+                level.setBlock( pos, Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, --moisture ), Block.UPDATE_CLIENTS );
                 
                 for( int i = 0; i < 5; i++ ) {
                     level.sendParticles(
                             DSParticles.WATER_VAPOR.get(),
                             pos.getX() + random.nextDouble(),
-                            pos.getY() + 1.1D,
+                            pos.getY() + 1.1,
                             pos.getZ() + random.nextDouble(),
                             1,
-                            0.0D,
-                            0.01D,
-                            0.0D,
-                            0.02D
+                            0.0,
+                            0.01,
+                            0.0,
+                            0.02
                     );
                 }
                 // Speed things up a bit
