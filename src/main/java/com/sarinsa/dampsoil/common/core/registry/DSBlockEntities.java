@@ -1,7 +1,7 @@
 package com.sarinsa.dampsoil.common.core.registry;
 
+import com.sarinsa.dampsoil.common.block.entity.SprinklerBlockEntity;
 import com.sarinsa.dampsoil.common.core.DampSoil;
-import com.sarinsa.dampsoil.common.tile.SprinklerBlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;

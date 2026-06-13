@@ -1,7 +1,7 @@
 package com.sarinsa.dampsoil.common.block;
 
+import com.sarinsa.dampsoil.common.block.entity.SprinklerBlockEntity;
 import com.sarinsa.dampsoil.common.core.config.Config;
-import com.sarinsa.dampsoil.common.tile.SprinklerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -53,8 +53,10 @@ public class SprinklerBlock extends Block implements EntityBlock {
     
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker( Level level, BlockState state, BlockEntityType<T> type ) {
-        return ( lvl, blockState, pos, blockEntity ) -> SprinklerBlockEntity.tick( lvl, blockState, pos, (SprinklerBlockEntity) blockEntity );
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker( Level level, BlockState blockState, BlockEntityType<T> type ) {
+        if( level.isClientSide )
+            return ( lvl, state, pos, blockEntity ) -> SprinklerBlockEntity.clientTick( lvl, state, pos, (SprinklerBlockEntity) blockEntity );
+        return ( lvl, state, pos, blockEntity ) -> SprinklerBlockEntity.serverTick( (ServerLevel) lvl, state, pos, (SprinklerBlockEntity) blockEntity );
     }
     
     @Nullable
@@ -78,32 +80,34 @@ public class SprinklerBlock extends Block implements EntityBlock {
                 if( !level.getBlockState( pos.below() ).isAir() )
                     obstructed = true;
             }
+            
+            if( obstructed ) {
+                level.setBlock( pos, state.setValue( SPRINKLING, false ).setValue( ACTIVATED, false ), Block.UPDATE_CLIENTS );
+                return;
+            }
+            
             int activationTime = Config.IRRIGATION.SPRINKLERS.activeDuration.get();
             
             // activation
-            if( level.hasNeighborSignal( pos ) && !obstructed ) {
+            if( level.hasNeighborSignal( pos ) ) {
                 if( !state.getValue( ACTIVATED ) ) {
-                    level.setBlock( pos, state.setValue( SPRINKLING, true ).setValue( ACTIVATED, true ), 2 );
+                    level.setBlock( pos, state.setValue( SPRINKLING, true ).setValue( ACTIVATED, true ), Block.UPDATE_CLIENTS );
                     
                     if( activationTime > 0 ) {
-                        level.scheduleTick( pos, this, activationTime * 20 );
+                        level.scheduleTick( pos, this, activationTime );
                     }
                     else {
-                        level.setBlock( pos, state.setValue( SPRINKLING, true ).setValue( ACTIVATED, true ), 2 );
+                        level.setBlock( pos, state.setValue( SPRINKLING, true ).setValue( ACTIVATED, true ), Block.UPDATE_CLIENTS );
                     }
                 }
             }
             else {
                 if( activationTime > 0 ) {
-                    level.setBlock( pos, state.setValue( SPRINKLING, state.getValue( SPRINKLING ) ).setValue( ACTIVATED, false ), 2 );
+                    level.setBlock( pos, state.setValue( SPRINKLING, state.getValue( SPRINKLING ) ).setValue( ACTIVATED, false ), Block.UPDATE_CLIENTS );
                 }
                 else {
-                    level.setBlock( pos, state.setValue( SPRINKLING, false ).setValue( ACTIVATED, false ), 2 );
+                    level.setBlock( pos, state.setValue( SPRINKLING, false ).setValue( ACTIVATED, false ), Block.UPDATE_CLIENTS );
                 }
-            }
-            // but not when obstructed
-            if( obstructed ) {
-                level.setBlock( pos, state.setValue( SPRINKLING, false ).setValue( ACTIVATED, false ), 2 );
             }
         }
     }
@@ -115,7 +119,7 @@ public class SprinklerBlock extends Block implements EntityBlock {
     @SuppressWarnings( "deprecation" )
     @Override
     public void tick( BlockState state, ServerLevel world, BlockPos pos, RandomSource random ) {
-        world.setBlock( pos, state.setValue( SPRINKLING, false ), 2 );
+        world.setBlock( pos, state.setValue( SPRINKLING, false ), Block.UPDATE_CLIENTS );
     }
     
     @Override

@@ -11,7 +11,7 @@ import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import com.sarinsa.dampsoil.common.core.registry.DSItems;
 import com.sarinsa.dampsoil.common.core.registry.DSParticles;
-import com.sarinsa.dampsoil.common.event.DSEventListener;
+import com.sarinsa.dampsoil.common.event.GameEventListener;
 import com.sarinsa.dampsoil.common.network.PacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -51,7 +51,7 @@ public class DampSoil {
         
         addCompatListener( MinecraftForge.EVENT_BUS, AnimalBreedListener::new, SereneSeasonsHelper.MODID );
         
-        MinecraftForge.EVENT_BUS.register( new DSEventListener() );
+        MinecraftForge.EVENT_BUS.register( new GameEventListener() );
         MinecraftForge.EVENT_BUS.register( api.getProduceCooldownManager() );
         
         packetHandler.registerMessages();

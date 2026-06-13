@@ -30,13 +30,13 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class DSEventListener {
+public class GameEventListener {
     
     /**
      * Reduce or completely negate the effects of bone meal on crops.
      */
     @SubscribeEvent
-    public void onCropBonemealed( BonemealEvent event ) {
+    public void onBonemeal( BonemealEvent event ) {
         final Block block = event.getBlock().getBlock();
         final RandomSource random = event.getLevel().random;
         
@@ -116,6 +116,8 @@ public class DSEventListener {
     /** Called when a player right-clicks an entity. */
     @SubscribeEvent( priority = EventPriority.HIGH )
     public void onPlayerEntityInteract( PlayerInteractEvent.EntityInteract event ) {
+        if( event.getLevel().isClientSide ) return;
+        
         final ItemStack usedItem = event.getItemStack();
         
         // Check if baby feeding is disabled
