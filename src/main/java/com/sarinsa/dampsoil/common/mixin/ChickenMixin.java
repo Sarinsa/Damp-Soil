@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ChickenMixin extends Animal {
     
     @Shadow
-    public int eggTime = Config.ANIMALS.PRODUCE.chickenEggCooldown.getMin();
+    public int eggTime;
     
     protected ChickenMixin( EntityType<? extends Animal> type, Level level ) {
         super( type, level );

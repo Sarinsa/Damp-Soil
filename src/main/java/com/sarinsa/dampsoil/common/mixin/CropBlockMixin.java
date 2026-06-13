@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin( CropBlock.class )
-public abstract class CropsBlockMixin extends BushBlock implements BonemealableBlock {
+public abstract class CropBlockMixin extends BushBlock implements BonemealableBlock {
     
-    public CropsBlockMixin( Properties properties ) {
+    public CropBlockMixin( Properties properties ) {
         super( properties );
     }
     
@@ -26,7 +26,7 @@ public abstract class CropsBlockMixin extends BushBlock implements BonemealableB
             at = @At( "HEAD" ),
             cancellable = true
     )
-    public void onIsRandomlyTicking( BlockState state, CallbackInfoReturnable<Boolean> ci ) {
+    public void inject_isRandomlyTicking( BlockState state, CallbackInfoReturnable<Boolean> ci ) {
         ci.setReturnValue( true );
     }
 }

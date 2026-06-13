@@ -6,7 +6,7 @@
   "refmap": "dampsoil.mixins.refmap.json",
   "mixins": [
     "ChickenMixin",
-    "CropsBlockMixin",
+    "CropBlockMixin",
     "FarmBlockMixin",
     "StemBlockMixin"
   ],
