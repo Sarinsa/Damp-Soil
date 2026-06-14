@@ -21,7 +21,7 @@ public class BlockHelper {
             int moisture = level.getBlockState( pos ).getValue( FarmBlock.MOISTURE );
             
             if( moisture > 0 ) {
-                return Config.IRRIGATION.FARMLAND.vaporizeConditions.getOrElse( level, 0.0 ) > 0.0;
+                return Config.IRRIGATION.FARMLAND.vaporizeConditions.getOrElseIfLoaded( level, pos, 0.0 ) > 0.0;
             }
         }
         return false;

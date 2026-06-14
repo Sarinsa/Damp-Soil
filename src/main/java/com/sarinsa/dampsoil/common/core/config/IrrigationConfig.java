@@ -11,10 +11,10 @@ import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeTemperatureEnvironment;
-import fathertoast.crust.api.config.common.value.environment.biome.RainfallEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
 import fathertoast.crust.api.config.common.value.environment.position.PositionEnvironment;
 import fathertoast.crust.api.config.common.value.environment.time.DayTimeEnvironment;
+import fathertoast.crust.api.config.common.value.environment.time.WeatherEnvironment;
 import net.minecraft.world.level.block.FarmBlock;
 
 import java.util.List;
@@ -104,7 +104,7 @@ public class IrrigationConfig extends AbstractConfigFile {
                             new BiomeTemperatureEnvironment( ComparisonOperator.GREATER_OR_EQUAL, 2.0F ),
                             new PositionEnvironment( PositionEnvironment.Value.CAN_SEE_SKY, false ),
                             new DayTimeEnvironment( DayTimeEnvironment.Value.DAY, false ),
-                            new RainfallEnvironment( ComparisonOperator.EQUAL_TO, 0.0F )
+                            new WeatherEnvironment( WeatherEnvironment.Value.CLEAR, false )
                     ) ),
                     new EnvironmentEntry( 1.0, new DimensionPropertyEnvironment( DimensionPropertyEnvironment.Value.ULTRAWARM, false ) )
             ).setRange( DoubleField.Range.NON_NEGATIVE );

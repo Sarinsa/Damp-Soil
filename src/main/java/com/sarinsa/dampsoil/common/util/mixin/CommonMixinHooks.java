@@ -85,6 +85,9 @@ public class CommonMixinHooks {
     }
     
     public static void onCanMate( Animal animal, CallbackInfoReturnable<Boolean> cir ) {
+        // noinspection resource
+        if( animal.level().isClientSide ) return;
+        
         if( !Config.COMPAT.SERENE_SEASONS.seasonalBreeding.get() || !ModList.get().isLoaded( SereneSeasonsHelper.MODID ) )
             return;
         
