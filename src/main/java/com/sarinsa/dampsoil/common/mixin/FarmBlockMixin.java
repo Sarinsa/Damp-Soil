@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin( value = FarmBlock.class, priority = 500 )
+@Mixin( value = FarmBlock.class, priority = 1010 )
 public abstract class FarmBlockMixin extends Block {
     
     @Shadow

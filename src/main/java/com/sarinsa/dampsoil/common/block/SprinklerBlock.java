@@ -34,15 +34,15 @@ public class SprinklerBlock extends Block implements EntityBlock {
     
     public SprinklerBlock( Supplier<Integer> radiusSupplier ) {
         super( BlockBehaviour.Properties.of()
-                .strength( 2.0f )
+                .strength( 2.0F )
                 .sound( SoundType.METAL )
                 .requiresCorrectToolForDrops() );
+        radius = radiusSupplier;
         
         registerDefaultState( stateDefinition.any()
                 .setValue( SPRINKLING, false )
                 .setValue( ACTIVATED, false )
                 .setValue( FACING, Direction.UP ) );
-        this.radius = radiusSupplier;
     }
     
     @Nullable
