@@ -1,6 +1,9 @@
 1.20.1-5.3.11
     - Now requires Crust
     - Configs have now been rewritten to make use of Crust's config API
+    - Blocking animal breeding no longer prevents feeding the animal, only the breeding process itself
+    - Added block tag "dampsoil:dead_crop_may_place_on"
+    - Made some internal changes to the produce cooldown manager
 1.20.1-4.2.10
     - Fixed client-side crash that would occur if the player is quickly moved far away from an active sprinkler so it becomes unloaded
 1.20.1-4.2.9

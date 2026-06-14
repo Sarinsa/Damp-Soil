@@ -5,7 +5,14 @@ import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.BooleanField;
 import fathertoast.crust.api.config.common.field.DoubleField;
+import fathertoast.crust.api.config.common.field.collection.BlockStateMapField;
+import fathertoast.crust.api.config.common.value.collection.BlockStateMap;
+import fathertoast.crust.api.config.common.value.collection.value.DoubleValueCodec;
+import fathertoast.crust.api.util.BlockStatePropertyMap;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Blocks;
 
+@SuppressWarnings( "UnstableApiUsage" )
 public class CropsConfig extends AbstractConfigFile {
     
     public final General GENERAL;
@@ -21,9 +28,9 @@ public class CropsConfig extends AbstractConfigFile {
     
     public static class General extends AbstractConfigCategory<CropsConfig> {
         
-        public final DoubleField boneMealChance;
-        public final DoubleField growthChance;
+        public final BlockStateMapField<Double> boneMealChances;
         
+        public final DoubleField growthChance;
         public final BooleanField useMoistureMult;
         
         public final BooleanField killDryCrops;
@@ -32,27 +39,36 @@ public class CropsConfig extends AbstractConfigFile {
             super( parent, "general",
                     "Farmland options related to crops." );
             
-            boneMealChance = SPEC.define( new DoubleField( "bone_meal.chance", 0.35, DoubleField.Range.PERCENT,
-                    "Determines the chance for a crop to grow when using bone meal on it.",
-                    "Setting this to 0 effectively makes bone meal not work on crops at all." ) );
-            
-            growthChance = SPEC.define( new DoubleField( "growth_chance", 0.3, DoubleField.Range.PERCENT,
-                    "Determines the chance for a crop to grow when it is normally supposed to.",
-                    "This setting can in other words be used to effectively slow down the normal growth rate of crops." ) );
+            boneMealChances = SPEC.define( new BlockStateMapField<>( "bone_meal_chance.list", createDefaultBoneMealChances(),
+                    "A list of blocks that are considered crops (or just growable with bone meal).",
+                    "The additional value after the block state key is the chance for bone meal to grow the crop.",
+                    "In other words, this list can be used to effectively reduce bone meal effectiveness on specific crops." ) );
             
             SPEC.newLine();
             
-            // TODO - make this make sense
+            growthChance = SPEC.define( new DoubleField( "growth_chance", 0.3, DoubleField.Range.PERCENT,
+                    "Determines the chance for a crop to grow naturally (on random tick).",
+                    "This setting can in other words be used to slow down the normal growth rate of crops.",
+                    "Note that this only does anything for blocks that fire the Forge BlockEvent.CropGrowEvent.Pre event." ) );
+            
             useMoistureMult = SPEC.define( new BooleanField( "moisture_multiplier", true,
-                    "If enabled, a crop's growth chance will be affected by the moisture level of the farmland it grows on.",
-                    "The lower the moisture level, the lower the growth chance gets.",
+                    "If enabled, a crop's growth chance changes depending on the moisture level in the farmland it is planted on.",
+                    "The lower the moisture level, the lower the growth chance gets, coming to a complete reduction of 0% if the soil is completely dry.",
                     "The exact algorithm is as follows:",
-                    "growth chance = clamp( 0.0, 1.0, moisture / 'growth_chance' )" ) );
+                    "final growth chance = ((1.0 / max moisture) * current moisture) * growth chance" ) );
             
             SPEC.newLine();
             
             killDryCrops = SPEC.define( new BooleanField( "kill_dry_crops", true,
                     "If enabled, crops in completely dry farmland will shrivel and die." ) );
+        }
+        
+        private static BlockStateMap<Double> createDefaultBoneMealChances() {
+            return new BlockStateMap.Builder<>( DoubleValueCodec.PERCENT )
+                    .putTag( BlockTags.CROPS, BlockStatePropertyMap.EMPTY, 0.35 )
+                    .put( Blocks.MELON_STEM, BlockStatePropertyMap.EMPTY, 0.2 )
+                    .put( Blocks.PUMPKIN_STEM, BlockStatePropertyMap.EMPTY, 0.2 )
+                    .build();
         }
     }
 }

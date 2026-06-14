@@ -7,19 +7,16 @@ import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Cow;
-import net.minecraft.world.entity.animal.MushroomCow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolActions;
@@ -30,19 +27,23 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+@SuppressWarnings( "UnstableApiUsage" )
 public class GameEventListener {
     
     /**
      * Reduce or completely negate the effects of bone meal on crops.
      */
+    
     @SubscribeEvent
-    public void onBonemeal( BonemealEvent event ) {
-        final Block block = event.getBlock().getBlock();
+    public void onBoneMeal( BonemealEvent event ) {
+        if( event.getLevel().isClientSide ) return;
+        
+        final BlockState state = event.getBlock();
         final RandomSource random = event.getLevel().random;
         
-        if( block instanceof CropBlock ) {
-            if( !Config.CROPS.GENERAL.boneMealChance.rollChance( random ) ) {
-                event.setResult( Event.Result.DENY );
+        if( Config.CROPS.GENERAL.boneMealChances.contains( state ) ) {
+            if( !Config.CROPS.GENERAL.boneMealChances.rollChance( state, random ) ) {
+                event.setResult( Event.Result.ALLOW );
             }
         }
     }
@@ -51,9 +52,6 @@ public class GameEventListener {
     public void onCropGrow( BlockEvent.CropGrowEvent.Pre event ) {
         final LevelAccessor level = event.getLevel();
         final BlockPos pos = event.getPos();
-        
-        if( !level.getBlockState( pos ).is( BlockTags.CROPS ) )
-            return;
         
         if( level.getBlockState( pos.below() ).getBlock() instanceof FarmBlock ) {
             int moisture = level.getBlockState( pos.below() ).getValue( FarmBlock.MOISTURE );
@@ -116,32 +114,32 @@ public class GameEventListener {
     /** Called when a player right-clicks an entity. */
     @SubscribeEvent( priority = EventPriority.HIGH )
     public void onPlayerEntityInteract( PlayerInteractEvent.EntityInteract event ) {
-        if( event.getLevel().isClientSide ) return;
+        if( !(event.getTarget() instanceof Mob target) ) return;
         
         final ItemStack usedItem = event.getItemStack();
         
         // Check if baby feeding is disabled
-        if( event.getTarget() instanceof Animal animal && animal.isFood( event.getItemStack() ) ) {
+        if( target instanceof Animal animal && animal.isFood( event.getItemStack() ) ) {
             if( animal.isBaby() && Config.ANIMALS.GENERAL.denyBabyFeeding.get() ) {
                 cancelInteract( event, animal );
             }
         }
         
-        if( event.getTarget() instanceof Cow cow && usedItem.getItem() == Items.BUCKET ) {
-            if( !DampSoilApi.INSTANCE.getProduceCooldownManager().canProduce( cow, CooldownQueue.FIRST ) ) {
-                cancelInteract( event, cow );
+        if( (target.getType() == EntityType.COW || target.getType() == EntityType.MOOSHROOM) && usedItem.getItem() == Items.BUCKET ) {
+            if( !DampSoilApi.INSTANCE.getProduceCooldownManager().canProduce( target, CooldownQueue.FIRST ) ) {
+                cancelInteract( event, target );
             }
             else {
-                DampSoilApi.INSTANCE.getProduceCooldownManager().setRecentlyProduced( cow, CooldownQueue.FIRST, Config.ANIMALS.PRODUCE.cowMilkCooldown );
+                DampSoilApi.INSTANCE.getProduceCooldownManager().setRecentlyProduced( target, CooldownQueue.FIRST, Config.ANIMALS.PRODUCE.cowMilkCooldown );
             }
         }
         
-        else if( event.getTarget() instanceof MushroomCow mushroomCow && usedItem.getItem() == Items.BOWL ) {
-            if( !DampSoilApi.INSTANCE.getProduceCooldownManager().canProduce( mushroomCow, CooldownQueue.SECOND ) ) {
-                cancelInteract( event, mushroomCow );
+        else if( target.getType() == EntityType.MOOSHROOM && usedItem.getItem() == Items.BOWL ) {
+            if( !DampSoilApi.INSTANCE.getProduceCooldownManager().canProduce( target, CooldownQueue.SECOND ) ) {
+                cancelInteract( event, target );
             }
             else {
-                DampSoilApi.INSTANCE.getProduceCooldownManager().setRecentlyProduced( mushroomCow, CooldownQueue.SECOND, Config.ANIMALS.PRODUCE.mooshroomStewCooldown );
+                DampSoilApi.INSTANCE.getProduceCooldownManager().setRecentlyProduced( target, CooldownQueue.SECOND, Config.ANIMALS.PRODUCE.mooshroomStewCooldown );
             }
         }
     }

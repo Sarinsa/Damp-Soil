@@ -1,7 +1,7 @@
 package com.sarinsa.dampsoil.api;
 
 import fathertoast.crust.api.config.common.field.IntField;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 
 /**
  * The produce watcher is a server-side tick manager responsible for various cooldowns on
@@ -11,38 +11,35 @@ import net.minecraft.world.entity.LivingEntity;
  * <br><br>
  * Remember, you are of course free to manage cooldowns yourself in any way you'd like, but if you
  * want to utilize Damp Soil's own cooldown system you can do that too and use this.
- * <br><br>
- * <strong>NOTE:</strong> all mobs that should utilize this cooldown system MUST be added to the
- * entity type tag <br><strong>'damp_soil:cooldownable_mobs'</strong>, or else their cooldowns won't be ticked.
  */
 public interface IProduceCooldownManager {
     
     /**
-     * @param cooldownQueue A {@link CooldownQueue} representing the cooldown timer you wish to check.
-     * @param entity        The animal to check.
+     * @param cooldownQueue A {@link CooldownQueue} representing the cooldown queue to check.
+     * @param mob           The animal to check.
      * @return True if the given animal is on cooldown in the specified timer. Always returns false on client.
      */
-    boolean canProduce( LivingEntity entity, CooldownQueue cooldownQueue );
+    boolean canProduce( Mob mob, CooldownQueue cooldownQueue );
     
     /**
      * Puts the given entity on cooldown in the specified cooldown queue. Does nothing on client.
      *
-     * @param entity        The animal to put on cooldown.
-     * @param cooldownQueue A {@link CooldownQueue} representing a cooldown timer to add a cooldown to.
-     *                      Which type to use is entirely up to you. You can choose between 3 different cooldown timers.
+     * @param mob           The animal to put on cooldown.
+     * @param cooldownQueue A {@link CooldownQueue} representing the cooldown queue to add a cooldown to.
+     *                      Which type to use is completely optional. You can choose between 3 different cooldown timers.
      *                      See {@link CooldownQueue} for more information.
      * @param cooldown      The amount of cooldown ticks.
      */
-    void setRecentlyProduced( LivingEntity entity, CooldownQueue cooldownQueue, int cooldown );
+    void setRecentlyProduced( Mob mob, CooldownQueue cooldownQueue, int cooldown );
     
     /**
      * Puts the given entity on cooldown in the specified cooldown queue. Does nothing on client.
      *
-     * @param entity        The animal to put on cooldown.
+     * @param mob           The animal to put on cooldown.
      * @param cooldownQueue A {@link CooldownQueue} representing a cooldown timer to add a cooldown to.
-     *                      Which type to use is entirely up to you. You can choose between 3 different cooldown timers.
+     *                      Which type to use is completely optional. You can choose between 3 different cooldown timers.
      *                      See {@link CooldownQueue} for more information.
      * @param cooldownField An integer random-range config field to sample a cooldown from.
      */
-    void setRecentlyProduced( LivingEntity entity, CooldownQueue cooldownQueue, IntField.RandomRange cooldownField );
+    void setRecentlyProduced( Mob mob, CooldownQueue cooldownQueue, IntField.RandomRange cooldownField );
 }

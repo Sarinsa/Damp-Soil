@@ -1,25 +1,15 @@
 package com.sarinsa.dampsoil.common.block;
 
 
+import com.sarinsa.dampsoil.common.tag.DampSoilTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DeadBushBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class DeadCropBlock extends DeadBushBlock {
-    
-    private static final List<Block> validGround = Arrays.asList(
-            Blocks.DIRT,
-            Blocks.COARSE_DIRT,
-            Blocks.FARMLAND,
-            Blocks.PODZOL
-    );
     
     public DeadCropBlock() {
         super( BlockBehaviour.Properties.copy( Blocks.DEAD_BUSH ) );
@@ -27,7 +17,6 @@ public class DeadCropBlock extends DeadBushBlock {
     
     @Override
     protected boolean mayPlaceOn( BlockState state, BlockGetter world, BlockPos pos ) {
-        // TODO - replace this with a tag
-        return validGround.contains( state.getBlock() );
+        return state.is( DampSoilTags.Blocks.DEAD_CROP_MAY_PLACE_ON );
     }
 }

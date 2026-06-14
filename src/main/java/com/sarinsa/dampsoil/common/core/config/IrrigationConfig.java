@@ -14,6 +14,7 @@ import fathertoast.crust.api.config.common.value.environment.biome.BiomeTemperat
 import fathertoast.crust.api.config.common.value.environment.biome.RainfallEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
 import fathertoast.crust.api.config.common.value.environment.position.PositionEnvironment;
+import fathertoast.crust.api.config.common.value.environment.time.DayTimeEnvironment;
 import net.minecraft.world.level.block.FarmBlock;
 
 import java.util.List;
@@ -29,8 +30,16 @@ public class IrrigationConfig extends AbstractConfigFile {
                 "This config contains options related to irrigation."
         );
         
+        SPEC.fileOnlyNewLine();
+        SPEC.describeEnvironmentListPart1of2();
+        SPEC.fileOnlyNewLine();
+        
         FARMLAND = new Farmland( this );
         SPRINKLERS = new Sprinklers( this );
+        
+        SPEC.fileOnlyNewLine();
+        SPEC.describeEnvironmentListPart2of2();
+        SPEC.fileOnlyNewLine();
     }
     
     public static class Farmland extends AbstractConfigCategory<IrrigationConfig> {
@@ -42,9 +51,8 @@ public class IrrigationConfig extends AbstractConfigFile {
         
         public final DoubleField dryingChance;
         
-        public final DoubleField vaporizeChance;
-        public final IntField vaporizeDelay;
         public final EnvironmentListField vaporizeConditions;
+        public final IntField vaporizeDelay;
         
         public final BooleanField denyTrampling;
         public final BooleanField canFreeze;
@@ -59,8 +67,8 @@ public class IrrigationConfig extends AbstractConfigFile {
             
             SPEC.newLine();
             
-            waterRange = SPEC.define( new IntField( "water.range", 1, 0, 10,
-                    "Determines the effective radius of a water block to moisturize nearby farmland.",
+            waterRange = SPEC.define( new IntField( "water.range", 1, 0, 15,
+                    "Determines the effective radius of water blocks to moisturize nearby farmland.",
                     "Can be set to 0 to completely stop water sources from moisturizing farmland. 4 is the vanilla Minecraft value." ) );
             
             waterMoisture = SPEC.define( new IntField( "water.moisture", 4, 1, FarmBlock.MAX_MOISTURE,
@@ -76,10 +84,7 @@ public class IrrigationConfig extends AbstractConfigFile {
             
             vaporizeConditions = SPEC.define( new EnvironmentListField( "vaporize.conditions", createDefaultVaporizeConditions(),
                     "A list of environment conditions that result in farmland losing moisture much quicker.",
-                    "By default this includes being close to fire, lava or being exposed to sunlight in a warm biome." ) );
-            
-            vaporizeChance = SPEC.define( new DoubleField( "vaporize.chance", 1.0, DoubleField.Range.PERCENT,
-                    "The chance for farmland to start rapidly losing moisture when vaporization conditions are met." ) );
+                    "By default this includes being in an ultrawarm dimension or being exposed to direct sunlight in a hot biome." ) );
             
             vaporizeDelay = SPEC.define( new IntField( "vaporize.delay", 30, 1, 1000,
                     "The delay (in ticks) between each vaporization tick" ) );
@@ -98,6 +103,7 @@ public class IrrigationConfig extends AbstractConfigFile {
                     new EnvironmentEntry( 1.0, List.of(
                             new BiomeTemperatureEnvironment( ComparisonOperator.GREATER_OR_EQUAL, 2.0F ),
                             new PositionEnvironment( PositionEnvironment.Value.CAN_SEE_SKY, false ),
+                            new DayTimeEnvironment( DayTimeEnvironment.Value.DAY, false ),
                             new RainfallEnvironment( ComparisonOperator.EQUAL_TO, 0.0F )
                     ) ),
                     new EnvironmentEntry( 1.0, new DimensionPropertyEnvironment( DimensionPropertyEnvironment.Value.ULTRAWARM, false ) )
