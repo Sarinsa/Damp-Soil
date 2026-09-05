@@ -7,9 +7,7 @@ public class ObjHelper {
         if( objects.length < 1 )
             throw new NullPointerException();
         
-        for( Object o : objects ) {
-            if( o == null )
-                throw new NullPointerException();
-        }
+        for( Object o : objects )
+            if( o == null ) throw new NullPointerException();
     }
 }
