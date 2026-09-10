@@ -80,7 +80,7 @@ public class IrrigationConfig extends AbstractConfigFile {
             SPEC.newLine();
             
             denyTrampling = SPEC.define( new BooleanField( "deny_trampling", true,
-                    "If enabled, wet farmland will not be trampled if jumped on by players or mobs." ) );
+                    "If enabled, farmland can not be trampled by entities." ) );
             
             canFreeze = SPEC.define( new BooleanField( "can_freeze", true,
                     "If enabled, wet farmland will freeze in cold temperatures." ) );

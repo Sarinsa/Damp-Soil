@@ -47,11 +47,19 @@ public class BlockHelper {
      * or null if the target block state does not have a valid moisture property.
      */
     public static Optional<Integer> getMoistureAt( LevelAccessor level, BlockPos pos ) {
-        if( level.getBlockState( pos.below() ).getBlock() instanceof FarmBlock ) {
-            return Optional.of( level.getBlockState( pos.below() ).getValue( FarmBlock.MOISTURE ) );
+        if( level.getBlockState( pos ).getBlock() instanceof FarmBlock ) {
+            return Optional.of( level.getBlockState( pos ).getValue( FarmBlock.MOISTURE ) );
         }
         else {
             return Optional.empty();
         }
+    }
+    
+    /**
+     * @return The moisture level of the block state at the given position,
+     * or the given default value if the target block state does not have a valid moisture property.
+     */
+    public static int getMoistureAtOrElse( LevelAccessor level, BlockPos pos, int defaultValue ) {
+        return getMoistureAt( level, pos ).orElse( defaultValue );
     }
 }
