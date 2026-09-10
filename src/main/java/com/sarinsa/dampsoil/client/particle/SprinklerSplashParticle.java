@@ -10,10 +10,10 @@ public class SprinklerSplashParticle extends TextureSheetParticle {
         super( clientLevel, x, y, z, xSpeed, ySpeed, zSpeed );
         hasPhysics = true;
         gravity = 0.7F;
-        
         xd *= 5.5F;
         yd *= 1.2F;
         zd *= 5.5F;
+        
         pickSprite( sprites );
     }
     
@@ -22,8 +22,7 @@ public class SprinklerSplashParticle extends TextureSheetParticle {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
     
-    public record Factory(
-            SpriteSet spriteSet) implements ParticleProvider<SimpleParticleType> {
+    public record Factory(SpriteSet spriteSet) implements ParticleProvider<SimpleParticleType> {
         
         public Particle createParticle( SimpleParticleType particleType, ClientLevel world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed ) {
             return new SprinklerSplashParticle( world, x, y, z, xSpeed, ySpeed, zSpeed, spriteSet );

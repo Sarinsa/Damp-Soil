@@ -8,7 +8,7 @@ import sereneseasons.api.season.SeasonHelper;
 /** Helper class containing convenience stuff for Serene Seasons. */
 public class SereneSeasonsHelper {
     
-    public static final String MODID = "sereneseasons";
+    public static final String MOD_ID = "sereneseasons";
     
     
     /** @return True if the current season is winter. */
@@ -29,7 +29,7 @@ public class SereneSeasonsHelper {
      * Returns false if not, or if Serene Seasons is not installed.
      */
     private static boolean isSeason( Level level, Season seasonState ) {
-        if( ModList.get().isLoaded( MODID ) ) {
+        if( ModList.get().isLoaded( MOD_ID ) ) {
             return SeasonHelper.getSeasonState( level ).getSeason() == seasonState;
         }
         return false;

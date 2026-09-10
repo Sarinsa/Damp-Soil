@@ -2,8 +2,6 @@ package com.sarinsa.dampsoil.common.core;
 
 import com.sarinsa.dampsoil.api.SprinkleResults;
 import com.sarinsa.dampsoil.api.impl.DampSoilApi;
-import com.sarinsa.dampsoil.common.compat.glitchfiend.AnimalBreedListener;
-import com.sarinsa.dampsoil.common.compat.glitchfiend.SereneSeasonsHelper;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.TempModifiers;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.ToughAsNailsHelper;
 import com.sarinsa.dampsoil.common.core.config.Config;
@@ -25,21 +23,15 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.function.Supplier;
-
 @Mod( DampSoil.MODID )
 public class DampSoil {
     
     /** The mod's ID. */
     public static final String MODID = "dampsoil";
     /** A logger instance using this mod's ID as identifier. */
-    public static final Logger LOGGER = LogManager.getLogger( MODID );
-    
-    
-    @SuppressWarnings( "FieldCanBeLocal" )
-    private final PacketHandler packetHandler = new PacketHandler();
-    
-    private final DampSoilApi api = DampSoilApi.INSTANCE;
+    public static final Logger LOG = LogManager.getLogger( MODID );
+    /** Damp Soil's API instance. */
+    private final DampSoilApi API = DampSoilApi.INSTANCE;
     
     
     public DampSoil( FMLJavaModLoadingContext context ) {
@@ -49,12 +41,10 @@ public class DampSoil {
         modBus.addListener( this::onCommonSetup );
         modBus.addListener( this::onInterModEnqueue );
         
-        addCompatListener( MinecraftForge.EVENT_BUS, AnimalBreedListener::new, SereneSeasonsHelper.MODID );
-        
         MinecraftForge.EVENT_BUS.register( new GameEventListener() );
-        MinecraftForge.EVENT_BUS.register( api.getProduceCooldownManager() );
+        MinecraftForge.EVENT_BUS.register( API.getProduceCooldownManager() );
         
-        packetHandler.registerMessages();
+        new PacketHandler().registerMessages();
         
         DSBlocks.BLOCKS.register( modBus );
         DSItems.ITEMS.register( modBus );
@@ -77,11 +67,6 @@ public class DampSoil {
         } );
     }
     
-    @SuppressWarnings( "SameParameterValue" )
-    private void addCompatListener( IEventBus bus, Supplier<Object> listener, String modId ) {
-        if( ModList.get().isLoaded( modId ) )
-            bus.register( listener.get() );
-    }
     
     /** @return A {@link ResourceLocation} with this mod's namespace and the specified path. */
     public static ResourceLocation rl( String path ) {

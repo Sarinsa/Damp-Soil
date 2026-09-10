@@ -88,7 +88,7 @@ public class CommonMixinHooks {
         // noinspection resource
         if( animal.level().isClientSide ) return;
         
-        if( !Config.COMPAT.SERENE_SEASONS.seasonalBreeding.get() || !ModList.get().isLoaded( SereneSeasonsHelper.MODID ) )
+        if( !Config.COMPAT.SERENE_SEASONS.seasonalBreeding.get() || !ModList.get().isLoaded( SereneSeasonsHelper.MOD_ID ) )
             return;
         
         final SeasonRepresentable[] seasons = Config.COMPAT.SERENE_SEASONS.breedingSeasonsList.get( animal );

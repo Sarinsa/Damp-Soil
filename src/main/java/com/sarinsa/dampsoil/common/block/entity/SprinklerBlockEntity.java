@@ -210,7 +210,7 @@ public class SprinklerBlockEntity extends BlockEntity {
      */
     protected void maybeUpdateState( State newState ) {
         if( newState != state ) {
-            this.state = newState;
+            state = newState;
             
             if( hasLevel() ) {
                 sendBlockUpdate();
@@ -283,14 +283,13 @@ public class SprinklerBlockEntity extends BlockEntity {
         readSyncData( tag );
     }
     
-    /**
-     * Send a block update which should send the sprinkler update packet to clients.
-     */
+    /** Send a block update which should send the sprinkler update packet to clients. */
     protected void sendBlockUpdate() {
         // noinspection ConstantConditions
         level.sendBlockUpdated( getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS );
     }
     
+    /** @return This block entity's capability data of a certain capability type, and optionally from a specific facing. */
     @Override
     public <T> LazyOptional<T> getCapability( Capability<T> capability, @Nullable Direction facing ) {
         LazyOptional<T> result = ForgeCapabilities.FLUID_HANDLER.orEmpty( capability, fluidHandler );
