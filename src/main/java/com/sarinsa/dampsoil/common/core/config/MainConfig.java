@@ -10,7 +10,7 @@ public class MainConfig extends AbstractConfigFile {
     
     /** Builds the config spec that should be used for this config. */
     MainConfig( ConfigManager manager, String fileName ) {
-        super( manager, fileName,
+        super( manager, fileName, false,
                 "This config contains options that apply to the mod as a whole."
         );
         

@@ -14,7 +14,7 @@ public class AnimalsConfig extends AbstractConfigFile {
     
     /** Builds the config spec that should be used for this config. */
     AnimalsConfig( ConfigManager manager, String fileName ) {
-        super( manager, fileName,
+        super( manager, fileName, false,
                 "This config contains options related to animals."
         );
         
@@ -50,17 +50,17 @@ public class AnimalsConfig extends AbstractConfigFile {
                     "Options related animal produce and cooldowns." );
             
             chickenEggCooldown = new IntField.RandomRange( SPEC, "chicken.egg_cooldown", 10000, 14000, 20, Integer.MAX_VALUE,
-                    "The minimum and maximum (inclusive) cooldown in ticks to put chickens on after laying an egg." );
+                    true, "The minimum and maximum (inclusive) cooldown in ticks to put chickens on after laying an egg." );
             
             SPEC.newLine();
             
             cowMilkCooldown = new IntField.RandomRange( SPEC, "cow.milk_cooldown", 200, 500, 0, Integer.MAX_VALUE,
-                    "The minimum and maximum (inclusive) cooldown in ticks to put cows on after they have been milked." );
+                    true, "The minimum and maximum (inclusive) cooldown in ticks to put cows on after they have been milked." );
             
             SPEC.newLine();
             
             mooshroomStewCooldown = new IntField.RandomRange( SPEC, "mooshroom.stew_cooldown", 200, 500, 0, Integer.MAX_VALUE,
-                    "The minimum and maximum (inclusive) cooldown in ticks to put put mooshrooms on after they have been \"milked\"" );
+                    true, "The minimum and maximum (inclusive) cooldown in ticks to put put mooshrooms on after they have been \"milked\"" );
         }
     }
 }

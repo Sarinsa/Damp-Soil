@@ -1,3 +1,11 @@
+1.20.1-6.0.0
+    - Updated to use Crust 5
+    - Removed unused event listener AnimalBreedListener.java
+    - Changed some config fields:
+        - Config "crops.toml":
+            - Field "general.growth_chance" has been replaced with block state map "general.growth_chances"
+            - Field "general.kill_dry_crops" has been replaced with block state set "general.dies_without_water.list"
+            - Field "general.bone_meal_chance.list" has been renamed to "general.bone_meal_chances"
 1.20.1-5.3.11
     - Now requires Crust
     - Configs have now been rewritten to make use of Crust's config API

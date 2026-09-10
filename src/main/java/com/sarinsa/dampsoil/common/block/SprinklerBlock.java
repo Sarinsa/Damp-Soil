@@ -69,47 +69,36 @@ public class SprinklerBlock extends Block implements EntityBlock {
     @Override
     public void neighborChanged( BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean notify ) {
         if( !level.isClientSide ) {
-            // obstruction check
-            boolean obstructed = false;
-            
-            if( state.getValue( FACING ) == Direction.UP ) {
-                if( !level.getBlockState( pos.above() ).isAir() )
-                    obstructed = true;
-            }
-            else {
-                if( !level.getBlockState( pos.below() ).isAir() )
-                    obstructed = true;
-            }
+            // Obstruction check
+            boolean obstructed;
+            if( state.getValue( FACING ) == Direction.UP )
+                obstructed = !level.getBlockState( pos.above() ).isAir();
+            else obstructed = !level.getBlockState( pos.below() ).isAir();
             
             if( obstructed ) {
-                level.setBlock( pos, state.setValue( SPRINKLING, false ).setValue( ACTIVATED, false ), Block.UPDATE_CLIENTS );
+                updateSprinkler( level, pos, state, false, false );
                 return;
             }
-            
+            // Activate if given a redstone signal
             int activationTime = Config.IRRIGATION.SPRINKLERS.activeDuration.get();
-            
-            // activation
             if( level.hasNeighborSignal( pos ) ) {
                 if( !state.getValue( ACTIVATED ) ) {
-                    level.setBlock( pos, state.setValue( SPRINKLING, true ).setValue( ACTIVATED, true ), Block.UPDATE_CLIENTS );
+                    updateSprinkler( level, pos, state, true, true );
                     
                     if( activationTime > 0 ) {
                         level.scheduleTick( pos, this, activationTime );
                     }
-                    else {
-                        level.setBlock( pos, state.setValue( SPRINKLING, true ).setValue( ACTIVATED, true ), Block.UPDATE_CLIENTS );
-                    }
                 }
             }
             else {
-                if( activationTime > 0 ) {
-                    level.setBlock( pos, state.setValue( SPRINKLING, state.getValue( SPRINKLING ) ).setValue( ACTIVATED, false ), Block.UPDATE_CLIENTS );
-                }
-                else {
-                    level.setBlock( pos, state.setValue( SPRINKLING, false ).setValue( ACTIVATED, false ), Block.UPDATE_CLIENTS );
-                }
+                boolean sprinkling = activationTime > 0 ? state.getValue( SPRINKLING ) : false;
+                updateSprinkler( level, pos, state, sprinkling, false );
             }
         }
+    }
+    
+    private void updateSprinkler( Level level, BlockPos pos, BlockState state, boolean sprinkling, boolean activated ) {
+        level.setBlock( pos, state.setValue( SPRINKLING, sprinkling ).setValue( ACTIVATED, activated ), Block.UPDATE_CLIENTS );
     }
     
     public final Supplier<Integer> getRadius() {

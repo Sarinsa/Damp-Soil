@@ -13,7 +13,6 @@ import net.minecraft.world.entity.EntityType;
 
 import static com.sarinsa.dampsoil.common.compat.glitchfiend.SeasonRepresentable.*;
 
-@SuppressWarnings( "UnstableApiUsage" )
 public class CompatConfig extends AbstractConfigFile {
     
     public final General GENERAL;
@@ -22,7 +21,7 @@ public class CompatConfig extends AbstractConfigFile {
     
     /** Builds the config spec that should be used for this config. */
     CompatConfig( ConfigManager manager, String fileName ) {
-        super( manager, fileName,
+        super( manager, fileName, false,
                 "This config contains compatibility options for various mods."
         );
         SPEC.comment(

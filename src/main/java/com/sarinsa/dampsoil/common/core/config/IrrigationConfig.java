@@ -7,17 +7,11 @@ import fathertoast.crust.api.config.common.field.BooleanField;
 import fathertoast.crust.api.config.common.field.DoubleField;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.field.IntField;
-import fathertoast.crust.api.config.common.value.EnvironmentEntry;
-import fathertoast.crust.api.config.common.value.EnvironmentList;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
+import fathertoast.crust.api.config.common.value.collection.value.BooleanValueCodec;
+import fathertoast.crust.api.config.common.value.collection.value.ComparatorValue;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentList;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeTemperatureEnvironment;
-import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.PositionEnvironment;
-import fathertoast.crust.api.config.common.value.environment.time.DayTimeEnvironment;
-import fathertoast.crust.api.config.common.value.environment.time.WeatherEnvironment;
 import net.minecraft.world.level.block.FarmBlock;
-
-import java.util.List;
 
 public class IrrigationConfig extends AbstractConfigFile {
     
@@ -26,20 +20,15 @@ public class IrrigationConfig extends AbstractConfigFile {
     
     /** Builds the config spec that should be used for this config. */
     IrrigationConfig( ConfigManager manager, String fileName ) {
-        super( manager, fileName,
+        super( manager, fileName, false,
                 "This config contains options related to irrigation."
         );
-        
-        SPEC.fileOnlyNewLine();
-        SPEC.describeEnvironmentListPart1of2();
-        SPEC.fileOnlyNewLine();
+        EnvironmentListField.describe1of2( SPEC );
         
         FARMLAND = new Farmland( this );
         SPRINKLERS = new Sprinklers( this );
         
-        SPEC.fileOnlyNewLine();
-        SPEC.describeEnvironmentListPart2of2();
-        SPEC.fileOnlyNewLine();
+        EnvironmentListField.describe2of2( SPEC );
     }
     
     public static class Farmland extends AbstractConfigCategory<IrrigationConfig> {
@@ -51,7 +40,7 @@ public class IrrigationConfig extends AbstractConfigFile {
         
         public final DoubleField dryingChance;
         
-        public final EnvironmentListField vaporizeConditions;
+        public final EnvironmentListField<Boolean> vaporizeConditions;
         public final IntField vaporizeDelay;
         
         public final BooleanField denyTrampling;
@@ -82,9 +71,8 @@ public class IrrigationConfig extends AbstractConfigFile {
             
             SPEC.newLine();
             
-            vaporizeConditions = SPEC.define( new EnvironmentListField( "vaporize.conditions", createDefaultVaporizeConditions(),
-                    "A list of environment conditions that result in farmland losing moisture much quicker.",
-                    "By default this includes being in an ultrawarm dimension or being exposed to direct sunlight in a hot biome." ) );
+            vaporizeConditions = SPEC.define( new EnvironmentListField<>( "vaporize.conditions", createDefaultVaporizeConditions(),
+                    "A list of environment conditions that make farmland lose moisture rapidly when true." ) );
             
             vaporizeDelay = SPEC.define( new IntField( "vaporize.delay", 30, 1, 1000,
                     "The delay (in ticks) between each vaporization tick" ) );
@@ -98,16 +86,16 @@ public class IrrigationConfig extends AbstractConfigFile {
                     "If enabled, wet farmland will freeze in cold temperatures." ) );
         }
         
-        private static EnvironmentList createDefaultVaporizeConditions() {
-            return new EnvironmentList(
-                    new EnvironmentEntry( 1.0, List.of(
-                            new BiomeTemperatureEnvironment( ComparisonOperator.GREATER_OR_EQUAL, 2.0F ),
-                            new PositionEnvironment( PositionEnvironment.Value.CAN_SEE_SKY, false ),
-                            new DayTimeEnvironment( DayTimeEnvironment.Value.DAY, false ),
-                            new WeatherEnvironment( WeatherEnvironment.Value.CLEAR, false )
-                    ) ),
-                    new EnvironmentEntry( 1.0, new DimensionPropertyEnvironment( DimensionPropertyEnvironment.Value.ULTRAWARM, false ) )
-            ).setRange( DoubleField.Range.NON_NEGATIVE );
+        private static EnvironmentList<Boolean> createDefaultVaporizeConditions() {
+            return EnvironmentList.builder( BooleanValueCodec.DEFAULT_FALSE )
+                    // Evaporate in ultra warm dimensions
+                    .entryBuilder( true )
+                    .inUltraWarmDimension().or()
+                    // Otherwise check temperature, weather condition, time of day and if sky is visible
+                    .in( new BiomeTemperatureEnvironment( ComparatorValue.GREATER_OR_EQUAL, 2.0F ) ).and()
+                    .canSeeSky().and()
+                    .isDay().and()
+                    .isNotRaining().build().build();
         }
     }
     
