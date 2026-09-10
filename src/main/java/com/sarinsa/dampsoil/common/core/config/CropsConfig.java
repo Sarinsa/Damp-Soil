@@ -20,7 +20,7 @@ public class CropsConfig extends AbstractConfigFile {
     /** Builds the config spec that should be used for this config. */
     CropsConfig( ConfigManager manager, String fileName ) {
         super( manager, fileName, false,
-                "This config contains options that apply to crops."
+                "This config contains options that apply to crops, plants, saplings and anything that grows."
         );
         BlockStateMapField.describe( SPEC );
         
@@ -92,6 +92,8 @@ public class CropsConfig extends AbstractConfigFile {
             return new BlockStateSet.Builder<>()
                     .addTag( BlockTags.CROPS )
                     .addTag( BlockTags.SAPLINGS )
+                    .add( Blocks.MELON_STEM )
+                    .add( Blocks.PUMPKIN_STEM )
                     .build();
         }
     }
