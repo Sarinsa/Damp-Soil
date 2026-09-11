@@ -3,14 +3,13 @@ package com.sarinsa.dampsoil.api;
 import fathertoast.crust.api.config.common.field.IntField;
 import net.minecraft.world.entity.Mob;
 
+// TODO - Rework this to store item-type cooldown entries instead of using separate queues
+
 /**
- * The produce watcher is a server-side tick manager responsible for various cooldowns on
- * animals that produce resources, such as milk from cows and eggs from chickens etc.
+ * The produce cooldown manager is a server-side tick listener that takes care of cooldowns for
+ * animal produce, such as milk from cows and eggs from chickens etc.
  * <br><br>
- * The implementation of this can be obtained via {@link IDampSoilApi#getProduceCooldownManager()}.
- * <br><br>
- * Remember, you are of course free to manage cooldowns yourself in any way you'd like, but if you
- * want to utilize Damp Soil's own cooldown system you can do that too and use this.
+ * The produce cooldown manager instance can be obtained via {@link IDampSoilApi#getProduceCooldownManager()}.
  */
 public interface IProduceCooldownManager {
     

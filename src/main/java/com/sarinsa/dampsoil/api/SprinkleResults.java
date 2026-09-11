@@ -1,6 +1,7 @@
 package com.sarinsa.dampsoil.api;
 
 import com.sarinsa.dampsoil.common.util.ObjHelper;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -10,7 +11,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -24,15 +24,17 @@ import java.util.function.Supplier;
  * <br><br>
  * Use this class' registration methods to register sprinkle results.
  */
+// TODO - Add support for tags
 public final class SprinkleResults {
     
-    private static final Map<Block, Result> SPRINKLE_RESULTS = new HashMap<>();
+    private static final Map<Block, Result> SPRINKLE_RESULTS = new Object2ObjectOpenHashMap<>();
     
     
-    // Default logic for vanilla farmland. This can be overridden if desired.
+    /** Registers Damp Soil's sprinkle results. Other mods should not call this. */
     @ApiStatus.Internal
     public static void registerDefault() {
-        registerResult( Blocks.FARMLAND, ( level, pos, original ) -> Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE ) );
+        registerResult( Blocks.FARMLAND, ( level, pos, original ) ->
+                Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE ) );
     }
     
     
@@ -65,6 +67,7 @@ public final class SprinkleResults {
     }
     
     
+    /** Represents a sprinkle result. */
     @FunctionalInterface
     public interface Result {
         
