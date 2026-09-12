@@ -47,28 +47,23 @@ public class CommonMixinHooks {
     /**
      * Called from {@link FarmBlockMixin#inject_randomTick(BlockState, ServerLevel, BlockPos, RandomSource, CallbackInfo)}
      * <br><br>
-     * Checks if farmland should cancel its random tick to prevent it from losing
-     * moisture. How likely this is to happen depends on the farmlandDryingRate config option.
+     * First checks if {@link com.sarinsa.dampsoil.common.core.config.IrrigationConfig.Farmland#freezeConditions freeze conditions} evaluates to true,
+     * and freezes the farmland block if so, letting it retain its current moisture value.
      * <br><br>
-     * Also checks if we are in a cold biome and 'freezeFarmland' is enabled in the config, in which case
-     * we freeze the farmland and let it preserve the moisture it had.
+     * If freezing conditions did not pass, {@link com.sarinsa.dampsoil.common.core.config.IrrigationConfig.Farmland#vaporizeConditions vaporize conditions}
+     * are checked next, resulting in the farmland losing moisture rapidly if passed.
      * <br><br>
-     * ALSO also, if we are in a biome with a temperature greater than 1.0, and the block is in direct sunlight,
-     * evaporate moisture at normal tick speed.
+     * Lastly, checks if the farmland block should cancel its random tick to prevent it from losing
+     * moisture naturally. How likely this is to happen depends on the value of the
+     * {@link com.sarinsa.dampsoil.common.core.config.IrrigationConfig.Farmland#dryingChance drying chance} config option.
      */
     public static void onFarmlandRandomTick( BlockState state, RandomSource random, BlockPos pos, ServerLevel level, CallbackInfo ci ) {
         if( level.isClientSide ) return;
         
-        int moisture = state.getValue( FarmBlock.MOISTURE );
+        final int moisture = state.getValue( FarmBlock.MOISTURE );
         
-        if( Config.IRRIGATION.FARMLAND.canFreeze.get() ) {
-            if( BlockHelper.shouldFreezeFarmlandAt( level, pos ) && moisture > 0 ) {
-                level.setBlock( pos, DSBlocks.FROZEN_FARMLAND.get().defaultBlockState().setValue( FrozenFarmBlock.MOISTURE, moisture ), Block.UPDATE_CLIENTS );
-                ci.cancel();
-                return;
-            }
-        }
-        checkAndVaporize( state, random, pos, level, moisture );
+        if( maybeFreeze( pos, level, moisture, ci ) ) return;
+        maybeVaporize( state, random, pos, level, moisture );
         
         if( moisture > 0 && !Config.IRRIGATION.FARMLAND.dryingChance.rollChance( random ) )
             ci.cancel();
@@ -81,9 +76,13 @@ public class CommonMixinHooks {
     @SuppressWarnings( "unused" )
     public static void onFarmlandTick( BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci ) {
         if( level.isClientSide ) return;
-        checkAndVaporize( state, random, pos, level, state.getValue( FarmBlock.MOISTURE ) );
+        maybeVaporize( state, random, pos, level, state.getValue( FarmBlock.MOISTURE ) );
     }
     
+    /**
+     * Called from {@link com.sarinsa.dampsoil.common.mixin.AnimalMixin#inject_canMate(Animal, CallbackInfoReturnable)}
+     * when an animal entity checks if it can mate.
+     */
     public static void onCanMate( Animal animal, CallbackInfoReturnable<Boolean> cir ) {
         // noinspection resource
         if( animal.level().isClientSide ) return;
@@ -111,7 +110,16 @@ public class CommonMixinHooks {
         }
     }
     
-    private static void checkAndVaporize( BlockState state, RandomSource random, BlockPos pos, ServerLevel level, int moisture ) {
+    private static boolean maybeFreeze( BlockPos pos, ServerLevel level, int moisture, CallbackInfo ci ) {
+        if( BlockHelper.shouldFreezeFarmlandAt( level, pos, moisture ) ) {
+            level.setBlock( pos, DSBlocks.FROZEN_FARMLAND.get().defaultBlockState().setValue( FrozenFarmBlock.MOISTURE, moisture ), Block.UPDATE_CLIENTS );
+            ci.cancel();
+            return true;
+        }
+        return false;
+    }
+    
+    private static void maybeVaporize( BlockState state, RandomSource random, BlockPos pos, ServerLevel level, int moisture ) {
         if( BlockHelper.shouldEvaporateAt( level, pos ) ) {
             level.setBlock( pos, Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, --moisture ), Block.UPDATE_CLIENTS );
             
@@ -128,7 +136,7 @@ public class CommonMixinHooks {
                         0.02
                 );
             }
-            // Speed things up a bit
+            // Schedule next tick to evaporate
             level.scheduleTick( pos, state.getBlock(), Config.IRRIGATION.FARMLAND.vaporizeDelay.get() );
         }
     }

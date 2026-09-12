@@ -1,5 +1,6 @@
 package com.sarinsa.dampsoil.common.core.config;
 
+import com.sarinsa.dampsoil.common.core.config.environment.SeasonalWeatherEnvironment;
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
@@ -33,28 +34,22 @@ public class IrrigationConfig extends AbstractConfigFile {
     
     public static class Farmland extends AbstractConfigCategory<IrrigationConfig> {
         
-        public final BooleanField maxMoistureOnTill;
-        
         public final IntField waterRange;
         public final IntField waterMoisture;
-        
-        public final DoubleField dryingChance;
         
         public final EnvironmentListField<Boolean> vaporizeConditions;
         public final IntField vaporizeDelay;
         
+        public final EnvironmentListField<Boolean> freezeConditions;
+        
+        public final DoubleField dryingChance;
+        public final BooleanField maxMoistureOnTill;
         public final BooleanField denyTrampling;
-        public final BooleanField canFreeze;
         
         
         Farmland( IrrigationConfig parent ) {
             super( parent, "farmland",
                     "Options related to farmland blocks." );
-            
-            maxMoistureOnTill = SPEC.define( new BooleanField( "max_moisture_on_till", true,
-                    "If enabled, tilling dirt will always result in max moisture farmland." ) );
-            
-            SPEC.newLine();
             
             waterRange = SPEC.define( new IntField( "water.range", 1, 0, 15,
                     "Determines the effective radius of water blocks to moisturize nearby farmland.",
@@ -66,24 +61,28 @@ public class IrrigationConfig extends AbstractConfigFile {
             
             SPEC.newLine();
             
-            dryingChance = SPEC.define( new DoubleField( "drying_chance", 0.05, DoubleField.Range.PERCENT,
-                    "Determines the chance for farmland to lose moisture on random tick." ) );
-            
-            SPEC.newLine();
-            
             vaporizeConditions = SPEC.define( new EnvironmentListField<>( "vaporize.conditions", createDefaultVaporizeConditions(),
-                    "A list of environment conditions that make farmland lose moisture rapidly when true." ) );
+                    "A list of environment conditions that make farmland lose moisture rapidly when met." ) );
             
-            vaporizeDelay = SPEC.define( new IntField( "vaporize.delay", 30, 1, 1000,
+            vaporizeDelay = SPEC.define( new IntField( "vaporize.delay", 45, 1, 1000,
                     "The delay (in ticks) between each vaporization tick" ) );
             
             SPEC.newLine();
             
+            freezeConditions = SPEC.define( new EnvironmentListField<>( "freeze.conditions", createDefaultFreezeConditions(),
+                    "A list of environment conditions that make farmland freeze when met.",
+                    "By default, temperature must be 0, " ) );
+            
+            SPEC.newLine();
+            
+            dryingChance = SPEC.define( new DoubleField( "drying_chance", 0.05, DoubleField.Range.PERCENT,
+                    "Determines the chance for farmland to lose moisture on random tick." ) );
+            
+            maxMoistureOnTill = SPEC.define( new BooleanField( "max_moisture_on_till", true,
+                    "If enabled, tilling dirt will always result in max moisture farmland." ) );
+            
             denyTrampling = SPEC.define( new BooleanField( "deny_trampling", true,
                     "If enabled, farmland can not be trampled by entities." ) );
-            
-            canFreeze = SPEC.define( new BooleanField( "can_freeze", true,
-                    "If enabled, wet farmland will freeze in cold temperatures." ) );
         }
         
         private static EnvironmentList<Boolean> createDefaultVaporizeConditions() {
@@ -96,6 +95,14 @@ public class IrrigationConfig extends AbstractConfigFile {
                     .canSeeSky().and()
                     .isDay().and()
                     .isNotRaining().build().build();
+        }
+        
+        private static EnvironmentList<Boolean> createDefaultFreezeConditions() {
+            return EnvironmentList.builder( BooleanValueCodec.DEFAULT_FALSE )
+                    // Evaporate in ultra warm dimensions
+                    .entryBuilder( true )
+                    .in( new SeasonalWeatherEnvironment( SeasonalWeatherEnvironment.Value.CAN_SNOW, false ) ).and()
+                    .belowBlockLight( 12 ).build().build();
         }
     }
     
@@ -127,10 +134,10 @@ public class IrrigationConfig extends AbstractConfigFile {
             
             SPEC.newLine();
             
-            normalRadius = SPEC.define( new IntField( "radius.normal", 2, 1, 10,
+            normalRadius = SPEC.define( new IntField( "radius.normal", 2, 1, 50,
                     "Determines the radius of normal sprinklers' AoE." ) );
             
-            netheriteRadius = SPEC.define( new IntField( "radius.netherite", 4, 1, 10,
+            netheriteRadius = SPEC.define( new IntField( "radius.netherite", 5, 1, 50,
                     "Determines the radius of Netherite sprinklers' AoE." ) );
             
             SPEC.newLine();

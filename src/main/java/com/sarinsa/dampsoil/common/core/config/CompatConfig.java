@@ -44,7 +44,7 @@ public class CompatConfig extends AbstractConfigFile {
             super( parent, "general",
                     "Farmland compatibility options that are not associated with any specific mods." );
             
-            sprinklerRequiresPiping = SPEC.define( new BooleanField( "sprinkler.requires_piping", true,
+            sprinklerRequiresPiping = SPEC.define( new BooleanField( "sprinkler.requires_piping", false,
                     "If enabled, sprinklers will need to be hooked up with fluid pipes to function." ) );
         }
     }

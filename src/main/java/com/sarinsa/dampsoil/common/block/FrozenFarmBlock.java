@@ -38,8 +38,9 @@ public class FrozenFarmBlock extends Block {
     
     @Override
     public void randomTick( BlockState state, ServerLevel level, BlockPos pos, RandomSource randomSource ) {
-        if( !BlockHelper.shouldFreezeFarmlandAt( level, pos ) ) {
-            level.setBlock( pos, Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, state.getValue( MOISTURE ) ), Block.UPDATE_CLIENTS );
+        final int moisture = state.getValue( MOISTURE );
+        if( !BlockHelper.shouldFreezeFarmlandAt( level, pos, moisture ) ) {
+            level.setBlock( pos, Blocks.FARMLAND.defaultBlockState().setValue( FarmBlock.MOISTURE, moisture ), Block.UPDATE_CLIENTS );
         }
     }
     
