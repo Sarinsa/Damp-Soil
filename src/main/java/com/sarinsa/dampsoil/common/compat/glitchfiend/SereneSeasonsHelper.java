@@ -11,6 +11,12 @@ public class SereneSeasonsHelper {
     public static final String MOD_ID = "sereneseasons";
     
     
+    /** @return True if Serene Seasons is installed and loaded. */
+    public static boolean isModLoaded() {
+        return ModList.get().isLoaded( MOD_ID );
+    }
+    
+    
     /** @return True if the current season is winter. */
     public static boolean isWinter( Level level ) { return isSeason( level, Season.WINTER ); }
     
@@ -29,9 +35,7 @@ public class SereneSeasonsHelper {
      * Returns false if not, or if Serene Seasons is not installed.
      */
     private static boolean isSeason( Level level, Season seasonState ) {
-        if( ModList.get().isLoaded( MOD_ID ) ) {
-            return SeasonHelper.getSeasonState( level ).getSeason() == seasonState;
-        }
+        if( isModLoaded() ) return SeasonHelper.getSeasonState( level ).getSeason() == seasonState;
         return false;
     }
     

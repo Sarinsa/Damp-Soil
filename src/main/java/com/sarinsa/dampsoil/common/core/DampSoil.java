@@ -5,6 +5,7 @@ import com.sarinsa.dampsoil.api.impl.DampSoilApi;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.TempModifiers;
 import com.sarinsa.dampsoil.common.compat.glitchfiend.ToughAsNailsHelper;
 import com.sarinsa.dampsoil.common.core.config.Config;
+import com.sarinsa.dampsoil.common.core.config.environment.DSEnvironmentRegister;
 import com.sarinsa.dampsoil.common.core.registry.DSBlockEntities;
 import com.sarinsa.dampsoil.common.core.registry.DSBlocks;
 import com.sarinsa.dampsoil.common.core.registry.DSItems;
@@ -31,6 +32,7 @@ public class DampSoil {
     /** A logger instance using this mod's ID as identifier. */
     public static final Logger LOG = LogManager.getLogger( MODID );
     /** Damp Soil's API instance. */
+    @SuppressWarnings( "FieldCanBeLocal" )
     private final DampSoilApi API = DampSoilApi.INSTANCE;
     
     
@@ -52,7 +54,10 @@ public class DampSoil {
         DSBlockEntities.TILE_ENTITIES.register( modBus );
         
         // Enqueue config initialization
-        ModLoadingStage.CONSTRUCT.getDeferredWorkQueue().enqueueWork( context.getContainer(), Config::initialize );
+        ModLoadingStage.CONSTRUCT.getDeferredWorkQueue().enqueueWork( context.getContainer(), () -> {
+            DSEnvironmentRegister.register();
+            Config.initialize();
+        } );
     }
     
     public void onCommonSetup( FMLCommonSetupEvent event ) {
