@@ -157,6 +157,9 @@ public class SprinklerBlockEntity extends BlockEntity {
                     if( state.getValue( SprinklerBlock.FACING ) == Direction.DOWN ) yOffset = 4;
                     
                     BlockPos randomOffsetPos = pos.offset( random.nextInt( 1 + 2 * radius ) - radius, random.nextInt( 3 ) - yOffset, random.nextInt( 1 + 2 * radius ) - radius );
+                    // Make sure we are not in an unloaded chunk
+                    if( !level.isLoaded( randomOffsetPos ) ) continue;
+                    
                     BlockState currentState = level.getBlockState( randomOffsetPos );
                     SprinkleResults.Result result = SprinkleResults.get( currentState.getBlock() );
                     
@@ -168,6 +171,7 @@ public class SprinklerBlockEntity extends BlockEntity {
                             level.setBlock( randomOffsetPos, result.getState( level, randomOffsetPos, currentState ), SprinklerBlock.UPDATE_CLIENTS );
                         }
                     }
+                    // TODO - register this as a sprinkle result
                     // extinguish fires
                     if( level.getBlockState( randomOffsetPos ).is( BlockTags.FIRE ) ) {
                         level.removeBlock( randomOffsetPos, false );
@@ -181,7 +185,6 @@ public class SprinklerBlockEntity extends BlockEntity {
                         ToughAsNailsHelper.sprinklePlayer( player );
                     }
                 }
-                
                 // entity interactions
                 if( state.getValue( SprinklerBlock.FACING ) == Direction.DOWN )
                     range = range.move( 0, -3, 0 );
@@ -195,9 +198,7 @@ public class SprinklerBlockEntity extends BlockEntity {
                     }
                     // Extinguish entities if enabled
                     if( Config.IRRIGATION.SPRINKLERS.extinguishEntities.get() ) {
-                        if( entity.getRemainingFireTicks() > 0 ) {
-                            entity.clearFire();
-                        }
+                        if( entity.getRemainingFireTicks() > 0 ) entity.clearFire();
                     }
                 }
             }
@@ -307,6 +308,8 @@ public class SprinklerBlockEntity extends BlockEntity {
         }
     }
     
+    // TODO - This looks a bit insane when the radius is big, maychancely tweak?
+    
     /** Helper method for spawning splash particles. */
     protected static void splashParticles( int radius, Level level, BlockPos pos ) {
         // Make sure we are in a loaded area.
@@ -314,9 +317,9 @@ public class SprinklerBlockEntity extends BlockEntity {
         // and things are unloaded before we are done spawning splash particles
         if( !level.isLoaded( pos ) ) return;
         
-        final double speedMul = 30.0 * radius / 2.0;
         final RandomSource random = level.random;
-        final int count = 6 * (radius / 2);
+        final double speedMul = 15.0 * radius;
+        final int count = Math.max( 3 * radius, 100 );
         
         for( int i = 0; i < count; ++i ) {
             final double dx = (double) random.nextFloat() - 0.5;

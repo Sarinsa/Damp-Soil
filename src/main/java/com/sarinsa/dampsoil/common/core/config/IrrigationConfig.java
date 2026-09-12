@@ -134,11 +134,13 @@ public class IrrigationConfig extends AbstractConfigFile {
             
             SPEC.newLine();
             
-            normalRadius = SPEC.define( new IntField( "radius.normal", 2, 1, 50,
-                    "Determines the radius of normal sprinklers' AoE." ) );
+            normalRadius = SPEC.define( new IntField( "radius.normal", 2, 1, 100,
+                    "Determines the radius of normal sprinklers' AoE.",
+                    "Note that high values may lag the game, and will not affect blocks in unloaded chunks." ) );
             
-            netheriteRadius = SPEC.define( new IntField( "radius.netherite", 5, 1, 50,
-                    "Determines the radius of Netherite sprinklers' AoE." ) );
+            netheriteRadius = SPEC.define( new IntField( "radius.netherite", 5, 1, 100,
+                    "Determines the radius of Netherite sprinklers' AoE.",
+                    "Note that high values may lag the game, and will not affect blocks in unloaded chunks." ) );
             
             SPEC.newLine();
             
