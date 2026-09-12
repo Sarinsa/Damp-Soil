@@ -3,6 +3,8 @@
     - Removed unused event listener AnimalBreedListener.java
     - Disabling farmland trampling in the configs now applies to all blocks that fire BlockEvent.FarmlandTrampleEvent
     - The frozen farmland top texture now tiles a bit better
+    - Fixed sprinklers being configured to require piped water by default
+    - Tweaked some default config values
     - Changed some config fields:
         - Config "crops.toml":
             - The effect of field "general.deny_trampling" is no longer limited to only wet farmland
@@ -11,6 +13,7 @@
             - Field "general.bone_meal_chance.list" has been renamed to "general.bone_meal_chances"
         - Config "irrigation.toml":
             - Field "farmland.can_freeze" has been replaced with environment list "farmland.freeze_conditions"
+            - Vastly increased max value for fields "sprinklers.radius.normal" and "sprinklers.radius.netherite"
 1.20.1-5.3.11
     - Now requires Crust
     - Configs have now been rewritten to make use of Crust's config API
